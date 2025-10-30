@@ -1,0 +1,950 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 1: Database design &#8212; Databases and SQL</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapter1-database-design';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 1: that primary keys can consist of" href="chapter1-that-primary-keys-can-consist-of.html" />
+    <link rel="prev" title="Chapter 1: Database design ………………………….. ………………………….. .. 4" href="chapter1-database-design-4.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Databases and SQL</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Databases & SQL
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter1-database-design-4.html">Chapter 1: Database design ………………………….. ………………………….. .. 4</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 1: Database design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter1-that-primary-keys-can-consist-of.html">Chapter 1: that primary keys can consist of</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter1-1-functions.html">Chapter 1: 1 Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter2-database-design-continued-15.html">Chapter 2: Database Design (Continued) ………………………….. ………. 15</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter2-database-design-continued.html">Chapter 2: Database Design (Continued)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter3-principle-3-21.html">Chapter 3: Principle 3 ½ ………………………….. ………………………….. ……… 21</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter3-principle-3.html">Chapter 3: Principle 3 ½</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter4-views-24.html">Chapter 4: Views ………………………….. ………………………….. ………………. 24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter4-views.html">Chapter 4: Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter5-integrity-27.html">Chapter 5: Integrity ………………………….. ………………………….. …………… 27</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter5-integrity.html">Chapter 5: Integrity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter6-questions-28.html">Chapter 6: Questions ………………………….. ………………………….. ………… 28</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter6-questions.html">Chapter 6: Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter7-introduction-35.html">Chapter 7: Introduction ………………………….. ………………………….. …….. 35</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter7-introduction.html">Chapter 7: Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter9-sql-39.html">Chapter 9: SQL ………………………….. ………………………….. …………………. 39</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter9-sql.html">Chapter 9: SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter10-ms-access-2021-45.html">Chapter 10: MS Access 2021 ………………………….. …………………………. 45</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter10-ms-access-365.html">Chapter 10: MS Access 365</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter11-functions-47.html">Chapter 11: Functions ………………………….. ………………………….. ………. 47</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter11-files-51.html">Chapter 11: Files ………………………….. ………………………….. ………………. 51</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/<your-username>/databases-sql-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/<your-username>/databases-sql-book/edit/main/chapter1-database-design.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/<your-username>/databases-sql-book/issues/new?title=Issue%20on%20page%20%2Fchapter1-database-design.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/chapter1-database-design.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 1: Database design</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#empno-ename-job-salary-deptno-dname-mgr-empno-budget">empno ename job salary deptno dname mgr_empno budget</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">empno ename job salary deptno dname mgr_empno budget</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-1-database-design">
+<h1>Chapter 1: Database design<a class="headerlink" href="#chapter-1-database-design" title="Link to this heading">#</a></h1>
+<p>INTRODUCTION</p>
+<p>Who does the database design in a single -user system, of course, that single user does? But in a shared
+system no single end -user will have sufficient information to design the overalI database in its entirety;
+instead, there will be some specially designated person –probably the database administrator (DBA) –
+who has that responsibility. That person will have to work with users to under stand their individual
+requirements and will have to merge all those require ments together to produce an appropriate
+integrated design for the total database. Note, however, that individ ual users or user groups will be
+respon sible for describing their own requirements to the DBA, and a good way of doing that is by
+producing a preliminary design for their own piece of the d atabase. Thus even in a shared environment
+it is a good idea for users to have at least a basic knowledge with some of the principles of good
+design, even though they will probably not be responsible for the final overall design itself.
+Database design is a big topic . Whole books have been writ ten about it. Traditionally, it has always
+been regarded as a very difficult task, one involv ing highly specialized skills and consuming a great
+deal of time and effort. Now it is true that the design of large shared databases can indeed be quite
+difficult; but it is also true that the design of small and/or nonshared data bases can be fairly easy . The
+design of large databases is not always difficult, either, especially in the newer systems. What is more,
+the design principles that apply to small databases are still applicable when the database is large; it is
+just that the design of large databases has to take into account a number of additional considerations
+that are not rele vant to the small case. We content ourselves with identifying and illus trating some of
+the basic principles that app ly to both cases.</p>
+<p>As stated above, database design can be simple. Talking about it is frequently not! It is a fact that, in
+simple cases at least, it is often easier just to do the design than it is to try and explain exactly what it
+was you did. The reason for this state o f affairs is that in order to talk about design in the abstract, it is
+necessary to introduce a certain amount of abstract terminol ogy; and it is that terminology that is at
+the root of the problem. Papers on this topic typically involve a lot of abstract terms and tend therefore
+to be very difficult to read. I will do my best in what follows to be as concrete as possible. (Of course,
+I am saved from having to use a great deal of special terminology by the fact that I am not delving
+very deeply into the su bject anyway. I am not denying the need for abstract terms in a more
+far-reaching discussion.)</p>
+<p>Our discussion is divided into two pieces (corresponding to the two chapters). In each, we consider a
+simple example –one sufficiently simple that the “right” design is intuitively obvi ous–and then
+examine the question of exactly why that design is right . From these considerations we will extract
+some funda mental principles of good design, principles that (to repeat) apply to large databases as
+well as small ones.</p>
+<p>DEPARTMENTS AND EMPLOYEES: A GOOD DESIGN</p>
+<p>As stated in the “Introduction” section, database design is the process of deciding what tables you
+should have in the database and what fields those tables should contain. Our first example (a very bad
+one, but none the worse for that) concerns depart ments and employees. To be more specific, we wish
+to design a simple personnel database, in which we need to represent (or model) the following
+situation:</p>
+<p> The company has some number of departments. As time progresses, new departments can be
+created and existing ones eliminated.</p>
+<p> Each department has a department number (unique), a name, a manager, a budget, and a set
+(possibly empty) of employees. No manager can manage more than one department at a time.</p>
+<p> Each employee has an employee number (unique), a name, a job, and a salary. Employees can leave
+and join the company at any time. Every employee is in a department; no employee can be in more
+than one department at a time. Managers are considered to be in the department that they manage.
+(We are assuming a “flat” structure, for simplicity. That is, all departments are assumed to be at the
+same level; there is no notion of one department containing other, lower -level departments, or of one
+manager being se nior to another.)</p>
+<p>Department</p>
+<p>Deptno
+Name
+Mgr_empno
+budget</p>
+<p>Employee</p>
+<p>Empno
+Name
+Job
+Salary
+deptno</p>
+<p>DEPARTMENTS AND EMPLOYEES: A BAD DESIGN</p>
+<p>Now, why exactly is the design shown above the right one? Let us consider some alterna tives. There
+are basically two possible alternatives, both involving a single table instead of two tables . The first
+involves moving employee information into the department table, yielding (say) a design of the form
+shown in Fig. 1.1 (a table of 40 fields). The advantage of this design is that it is no longer necessary to
+specify the department number for ea ch employee separately. But the disadvantages are obvious.
+Among them are the following:</p>
+<ol class="arabic simple">
+<li><p>The table is very wide. It will not fit conveniently on the screen or (more important) on a printed
+page. Reports from this database will be clumsy and difficult to read –a very practical considera tion!</p></li>
+<li><p>We have had to set an upper limit (nine in the example) on the number of employees in a
+department. The first department to acquire a tenth employee will cause major disruption to the data -
+base and to programs that use the database.</p></li>
+</ol>
+<p>department
+deptno name mgr_empno budget ……</p>
+<p>1st employee in this department
+empno_1 name_1 job_1 salary_1 …….</p>
+<p>2nd employee in this department
+empno_2 name_2 job_2 salary_2 ……</p>
+<p>last employee in this department
+empno_9 name_9 job_9 salary_9 ……</p>
+<ol class="arabic simple" start="3">
+<li><p>Departments having fewer than nine employees will have records containing a lot of null values.
+For example, the record for a department with only three employees will contain 24 ‘null’ values (= no
+values , 6 x 4 = 24 ), which is not very elegant and may waste storage space on the disk. (As a matter of
+fact, each DEPT record in this design would probably include an additional field, NEMPS say, indicat ing
+the number of employees it does have. That field could appear immedi ately following the BUDGET
+field.)</p></li>
+<li><p>It is likely that employee data for each department would be kept in some specific order within the
+department record –for example, by alphabetical order of employee names, as in Fig. 1.2. (All fields
+following SALARY_3 in that figure will be null, sinc e NEMPS is 3 for this department.) Now consider
+the processing involved if a new employee (Clark) joins the depart ment, or if Adams leaves, or if the
+instructor (Smith) gets married and changes her name to Anderson. Each of these changes will lead
+to an a wkward shuffling of data within the record.</p></li>
+</ol>
+<p>deptno name mgr_empno budgetno_emps nemps</p>
+<p>M27 Education 42713 200K 3</p>
+<p>empno_1 name_1 job_1 salary_1
+61126 Adams Secretary 25K</p>
+<p>empno_2 name_2 job_2 salary_2
+42713 Cook Manager 50K</p>
+<p>empno_3 name_3 job_3 salary_3
+50708 Smith Instructor 30K</p>
+<p>empno_9 name_9 job_9 salary_9
+? ? ? ?</p>
+<ol class="arabic simple" start="5">
+<li><p>Which department is employee 61126 in? In SQL ( Structural Query Language):</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">SELECT</span> <span class="n">DEPTNO</span>
+<span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">EMPNO_1</span> <span class="o">=</span> <span class="s1">&#39;61126&#39;</span>
+</pre></div>
+</div>
+<p>OR EMPNO_2 = ‘61126’
+OR EMPNO_3 = ‘61126’
+OR EMPNO_4 = ‘61126’
+OR EMPNO_5 = ‘61126’
+OR EMPNO_6 = ‘61126’
+OR EMPNO_7 = ‘61126’
+OR EMPNO_8 = ‘61126’
+OR EMPNO_9 = ‘61126’</p>
+<ol class="arabic simple" start="6">
+<li><p>Another example: “What is the average salary for department K82?” First, we need to find how many
+employees there are in that department:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">SELECT</span> <span class="n">NEMPS</span>
+<span class="n">FROM</span> <span class="n">DEPT</span>
+<span class="n">WHERE</span> <span class="n">DEPTNO</span> <span class="o">=</span> <span class="s1">&#39;K82&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Suppose the result is 8. Then we compute the average salary as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">SELECT</span> <span class="p">(</span><span class="n">SALARY_1</span> <span class="o">+</span> <span class="n">SALARY_2</span> <span class="o">+</span> <span class="n">SALARY_3</span> <span class="o">+</span> <span class="n">SALARY_4</span> <span class="o">+</span> <span class="n">SALARY_5</span> <span class="o">+</span> <span class="n">SALARY_6</span> <span class="o">+</span> <span class="n">SALARY_7</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>SALARY_8) / 8</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">FROM</span> <span class="n">DEPT</span>
+<span class="n">WHERE</span> <span class="n">DEPTNO</span> <span class="o">=</span> <span class="s1">&#39;K82&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Now we consider briefly how the “right” design overcomes each of these problems:</p>
+<ol class="arabic simple">
+<li><p>Instead of having one very wide record for each department, the “right” design has (n + 1) records
+for each department (one DEPT record and n EMP records, where n is the number of employees in the
+department under consideration).</p></li>
+<li><p>There is no upper limit on n.</p></li>
+<li><p>A department with n employees will have exactly n EMP records. There is no question of an (n +
+1)st record in which field values are null.</p></li>
+<li><p>Ordering is not maintained within the database but is imposed on data as it is retrieved. For example:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">SELECT</span> <span class="n">EMPNO</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">JOB</span><span class="p">,</span> <span class="n">SALARY</span>
+<span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">DEPNO</span> <span class="o">=</span> <span class="s1">&#39;M27&#39;</span>
+<span class="n">ORDER</span> <span class="n">BY</span> <span class="n">NAME</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Inserting, deleting, and updating records is straightforward and does not involve any awkward
+shuffling of data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">EMP</span><span class="p">(</span><span class="o">.......</span><span class="p">,</span><span class="n">NAME</span><span class="p">,</span><span class="o">..........</span><span class="p">,</span> <span class="n">DEPTNO</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>VALUES (…….,’CLARK’,……,’M27’)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">DELETE</span> <span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">DEPTNO</span> <span class="o">=</span><span class="s1">&#39;M27&#39;</span>
+</pre></div>
+</div>
+<p>AND NAME = ‘ADAMS’;</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">UPDATE</span> <span class="n">EMP</span>
+</pre></div>
+</div>
+<p>SET NAME =’ANDERSON’</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">WHERE</span> <span class="n">DEPTNO</span> <span class="o">=</span> <span class="s1">&#39;M27&#39;</span>
+</pre></div>
+</div>
+<p>AND NAME = ‘SMITH’;</p>
+<ol class="arabic simple" start="5">
+<li><p>Which department is employee 61126 in?</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">SELECT</span> <span class="n">DEPTNO</span>
+<span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">EMPNO</span> <span class="o">=</span> <span class="s1">&#39;61126&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>What is the average salary in department K82?</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">SELECT</span> <span class="n">AVG</span><span class="p">(</span><span class="n">SALARY</span><span class="p">)</span>
+<span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">DEPTNO</span> <span class="o">=</span> <span class="s1">&#39;K82&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>DEPARTMENTS AND EMPLOYEES: ANOTHER BAD DESIGN</p>
+<p>The second alternative design for departments and employees is in effect, the converse of the previous
+one. Instead of moving employee information into the department table, it moves department
+information into the employee table, as follows:</p>
+<p>empno ename job Salary deptno dname mgr_empno budget</p>
+<p>Note that we have to distinguish between employee names and de partment names, so we have
+renamed the fields concerned ENAME and DNAME, respectiveIy. Let us look at some sample data for
+this design:</p>
+<section id="empno-ename-job-salary-deptno-dname-mgr-empno-budget">
+<h2>empno ename job salary deptno dname mgr_empno budget<a class="headerlink" href="#empno-ename-job-salary-deptno-dname-mgr-empno-budget" title="Link to this heading">#</a></h2>
+<p>61126 Adams Secretary 25K M27 Education 42713 200K
+42713 Cook Manager 50K M27 Education 42713 200K
+50708 Smith Instructor 30K M27 Education 42713 200K
+….. ….. …….. …. …. ……… …….. ……</p>
+<p>The principal disadvantage is redun dancy, as the sample data above clearly illustrates. Some
+consequences of that redundancy are as follows:</p>
+<ol class="arabic simple">
+<li><p>It is wasteful of storage space on the disk.</p></li>
+<li><p>It is possible to update the database in such a way that it becomes incon sistent. For example, the
+statement</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">UPDATE</span> <span class="n">EMP</span>
+</pre></div>
+</div>
+<p>SET MGR_EMPNO = ‘12345’</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">WHERE</span> <span class="n">EMPNO</span> <span class="o">=</span> <span class="s1">&#39;61126&#39;</span>
+</pre></div>
+</div>
+<p>will leave the database in an inconsistent state (the manager for department M27 will be shown as
+12345 in one record but as 42713 in others).</p>
+<ol class="arabic simple" start="3">
+<li><p>Suppose the department has just one employee in it. For example, suppose 61126 is the only
+employee in department M27. If we delete that employee:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">DELETE</span>
+<span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">EMPNO</span> <span class="o">=</span> <span class="s1">&#39;61126</span>
+</pre></div>
+</div>
+<p>then we lose all information about the department, too. (The department has become a department
+with no employees in it, and the design is incapable of representing such a department.)</p>
+<ol class="arabic simple" start="4">
+<li><p>(This point is really the converse of the previous one.) Suppose a new department H45 (department
+name Publishing, budget 400K, no manager yet assigned) has been established, but it contains no
+employees as yet. Then we cannot conveniently insert that information into the database, because we
+are not allowed to create a record such as</p></li>
+</ol>
+</section>
+<section id="id1">
+<h2>empno ename job salary deptno dname mgr_empno budget<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>? ? ? ? H45 Publishing ? 400K</p>
+<p>The reason for this restriction is that EMPNO is the primary key of the EMP table, and primary keys are
+usually not allowed to take on null values.</p>
+<p>Once again let us consider briefly how the “right” design solves these prob lems.</p>
+<p>Department</p>
+<p>Deptno
+Name
+Mgr_empno
+budget</p>
+<p>Employee</p>
+<p>Empno
+Name
+Job
+Salary</p>
+<ol class="arabic simple">
+<li><p>There is no redundancy, so there is no waste of memory space.</p></li>
+<li><p>There is no redundancy, so there cannot be any inconsistency. (Department M27’s manager is given
+in exactly one place –namely, in M27’s DEPT record –so it cannot be shown as 12345 in one place and
+42713 in another.)</p></li>
+<li><p>If we delete the only employee (61126) in M27:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">DELETE</span>
+<span class="n">FROM</span> <span class="n">EMP</span>
+<span class="n">WHERE</span> <span class="n">EMPNO</span> <span class="o">=</span> <span class="s1">&#39;61126&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>then no department information is lost. The record for M27 still exists in the DEPT table.</p>
+<ol class="arabic simple" start="4">
+<li><p>We can insert a department that has no employees:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">INSERT</span>
+</pre></div>
+</div>
+<p>INTO DEPT (DEPTNO, NAME, BUDGET)
+VALUES (‘H45’, ‘PUBLISHING’, 400K)</p>
+<p>DISCUSSION</p>
+<p>Let us now try and analyze what is going on in this example and see if we can extract some broad and
+useful principles from it. The situation to be modeled in the database involves two types of “entity”
+(i.e., two basic kinds of object), namely, department s and employees, and in the “right” design each of
+these entity types maps into a table of its own.
+Hence we have the following:</p>
+<p> Principle 1:</p>
+<p>Represent each entity type as a separate table.</p>
+<p>Second, each individual entity (each individual department or employee in the real world) has its own
+identifier unique with respect to all entities of the type in question, that is used to dis tinguish that
+particular entity from all others of that type. The unique identifier for departments is of course
+department number, that for employees is employee number. The se unique identifiers become
+primary keys in the database design.</p>
+<p> Principle 2:</p>
+<p>Decide the primary key for each table.</p>
+<p>Values of the primary key of a table must be unique and must not be null. (We can now see the reason
+for this “no nulls” restric tion, incidentally. A record with a null primary key value would have to
+correspond to an entity with a null identifier; and an entity with a null identifier is an entity with no
+identifier, which is a contradiction in terms. If there is no identifier, then there is no entity.)</p>
+<p>Each entity has certain properties : Departments have names, budgets, and so on; employees have
+jobs, salaries, and so on. These properties are represented by fields within the entity tables.</p>
+<p> Principle 3:</p>
+<p>Assign each property of an entity type to a field within the table representing that entity type.</p>
+<p>By following these three principles, we will always finish up with a design that conforms to the
+following simple pattern:</p>
+<p>Each table consists of:</p>
+<ol class="arabic simple">
+<li><p>a primary key, representing the unique identifier for some particular entity type;</p></li>
+</ol>
+<p>together with
+2. zero or more additional fields, representing properties of the entity type identified by the primary
+key and not of some other entity type.</p>
+<p>Both of the bad designs shown earlier fail to conform to this simple pattern. In the first case DEPT
+records included fields (such as SALARY_1, SALARY_2, etc.) that represented properties of employees
+rather than departments. In the second case EMP records included fields (such as BUDGET, DNAME,
+etc.) that represented properties of departments rather than employees. As a result, the (single) table
+in each case was overloaded with informa tion. The three prin ciples stated above, by contrast, will lead
+to a clean design in which each table contains information about one entity type only. That clean
+design will be easier to understand, easier to use, and (most important) easier to extend if new
+informa tion is to be added to the database later on. In a nutshel l, the design will be stable and will be
+a good foundation for future growth.</p>
+<p>Another way of expressing the clean design objective is: One fact in one place. Each “fact” (e.g., the
+fact that a given department has a given budget) appears at exactly one place in the design. Yet
+another way of characterizing it (very informally) is: E ach field represents a fact about the key, the
+whole key, and nothing but the key (where “key” is shorthand for “entity identified by the primary key
+of the table that contains the field in question”).</p>
+<p>So far we have said nothing about the relationship that con nects the two entity types in the example
+(i.e., the relationship between departments and employees). In fact, departments and employees
+provide the standard example of a one -to-many rela tionship : For each department there are many
+correspon ding employees (where “many” includes the possibilities of one and zero, of course). This
+relationship must be understood to be directed (from depart ments to employees); the converse
+relationship, from employ ees to depart ments, is many -to-one (many employees have the same
+department). The example illus trates how such relationships are represented in the database: The
+“many” table (EMP in the example) includes a foreign key (field EMP.DEPTNO), whose values ma tch
+values of the primary key (field DEPT.DEPTNO) of the “one” table (table DEPT). Schematically , we have
+the situation shown in Fig. 1.3.</p>
+<p>As a matter of fact, there is another relationship that holds be tween DEPTs and EMPs: Each department
+has a manager, and that manager is of course an employee. (That relationship is one -to-one: Each
+department has exactly one manager. “One -to-one” is jus t a speciaI case of “one -to-many,” however.)
+So we have an other foreign -key primary -key match: Field DEPT.MGR_ EMPNO is a foreign key in the
+DEPT table that matches the pri mary key (EMP.EMPNO) of the EMP table.
+Figure 1.4 shows both matches:</p>
+<p>DEPARTMENT
+deptno name mgr_empno budget</p>
+<p>EMPLOYEE
+empno name job salary deptno</p>
+<p>primary key foreign key
+stated that: department.deptno = employee.deptno</p>
+<p>DEPARTMENT
+deptno name mgr_empno budget
+primary key foreign key</p>
+<p>EMPLOYEE
+empno name job salary deptno
+primary key foreign key</p>
+<p>stated that: department.deptno = employee.deptno
+or department.mgr_empno = employee.empno</p>
+<p>figure figure 1.4</p>
+<p>An alternative design would drop the foreign key MGR_EMPNO from the DEPT table and would add a
+foreign key MGR_DEPTNO (say) to the EMP table, representing the depart ment managed by the
+employee in question. See Fig. 1.5. How ever, this design is less satisfactory because it involves a lot
+of null values (MGR_DEPTNO will be null for every employee who is not a manager). But it does
+illustrate a point that we have not ex plicity mentioned before –namely, that the general rule for for eign
+keys is not that each value of the foreign key must be equal to some existing primary key value, but
+rather that each value of the foreign key either must be equal to some existing primary key value or
+must be null. Sometimes, of course, null values will not be allowed; for example, the foreign key
+EMP .DEPTNO is not allowed to take on null values, since every employee must be in a department.</p>
+<p>Aside : To describe departments -to-managers as on e-to-one is in fact an over simplification. A more
+accurate statement is as follows: For one department there is either one manager or none (allowing
+for the case in which no manager is yet assigned); for one employee there is either one department or
+none that is managed by that employee. The relationship is thus really “(zero -or-one)-to-(zero -or-one).”
+But it is u sual to ignore such refinements in informal discussion.</p>
+<p>DEPARTMENT
+deptno name budget
+primary key</p>
+<p>EMPLOYEE
+empno name job salary deptno mgr_deptno
+primary key foreignkey foreign key</p>
+<p>stated that: department.deptno = employee.deptno
+or department.deptno = employee. mgr_deptno</p>
+<p>To return to the main topic: Foreign -key/primary -key matches are the glue that holds the database
+together. Identifying those matches is a crucial part of the database design process. So we have the
+following:</p>
+<p> Principle 4:</p>
+<p>Represent each one -to-many relationship between entity types by a foreign key in the “many” table
+that matches the primary key of the “one” table.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="chapter1-database-design-4.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 1: Database design ………………………….. ………………………….. .. 4</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="chapter1-that-primary-keys-can-consist-of.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 1: that primary keys can consist of</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#empno-ename-job-salary-deptno-dname-mgr-empno-budget">empno ename job salary deptno dname mgr_empno budget</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">empno ename job salary deptno dname mgr_empno budget</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By P.E. Broeksma & P.J. Kamphuis
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

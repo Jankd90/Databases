@@ -1,0 +1,948 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 1: 1 Functions &#8212; Databases and SQL</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapter1-1-functions';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 2: Database Design (Continued) ………………………….. ………. 15" href="chapter2-database-design-continued-15.html" />
+    <link rel="prev" title="Chapter 1: that primary keys can consist of" href="chapter1-that-primary-keys-can-consist-of.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Databases and SQL</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Databases & SQL
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter1-database-design-4.html">Chapter 1: Database design ………………………….. ………………………….. .. 4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter1-database-design.html">Chapter 1: Database design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter1-that-primary-keys-can-consist-of.html">Chapter 1: that primary keys can consist of</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 1: 1 Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter2-database-design-continued-15.html">Chapter 2: Database Design (Continued) ………………………….. ………. 15</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter2-database-design-continued.html">Chapter 2: Database Design (Continued)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter3-principle-3-21.html">Chapter 3: Principle 3 ½ ………………………….. ………………………….. ……… 21</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter3-principle-3.html">Chapter 3: Principle 3 ½</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter4-views-24.html">Chapter 4: Views ………………………….. ………………………….. ………………. 24</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter4-views.html">Chapter 4: Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter5-integrity-27.html">Chapter 5: Integrity ………………………….. ………………………….. …………… 27</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter5-integrity.html">Chapter 5: Integrity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter6-questions-28.html">Chapter 6: Questions ………………………….. ………………………….. ………… 28</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter6-questions.html">Chapter 6: Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter7-introduction-35.html">Chapter 7: Introduction ………………………….. ………………………….. …….. 35</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter7-introduction.html">Chapter 7: Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter9-sql-39.html">Chapter 9: SQL ………………………….. ………………………….. …………………. 39</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter9-sql.html">Chapter 9: SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter10-ms-access-2021-45.html">Chapter 10: MS Access 2021 ………………………….. …………………………. 45</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter10-ms-access-365.html">Chapter 10: MS Access 365</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter11-functions-47.html">Chapter 11: Functions ………………………….. ………………………….. ………. 47</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter11-files-51.html">Chapter 11: Files ………………………….. ………………………….. ………………. 51</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/<your-username>/databases-sql-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/<your-username>/databases-sql-book/edit/main/chapter1-1-functions.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/<your-username>/databases-sql-book/issues/new?title=Issue%20on%20page%20%2Fchapter1-1-functions.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/chapter1-1-functions.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 1: 1 Functions</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-1-1-functions">
+<h1>Chapter 1: 1 Functions<a class="headerlink" href="#chapter-1-1-functions" title="Link to this heading">#</a></h1>
+<p>Aggregate functions</p>
+<p>SQL provides with some so -called aggregate functions. Aggregation means to summarize values into one.
+The functions are:
+count( )
+sum( )
+avg( )
+min( )
+max( )</p>
+<p>The use of these aggregate functions is similar, and depends on whether they are used alone, or in
+conjunction with a field.
+In between the parentheses, the name of the field is specified. The function count() returns the number of
+entries that were selected; the other functions compute and print the sum, average, lowest or highest value
+of the selected entries with respect to the specified field.</p>
+<p>Aggregate function on its own
+In this case, the function just follows the ‘ select’ -clause and returns the computed value of the function will
+be computed.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="nb">min</span><span class="p">(</span><span class="n">week</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">charts</span>
+<span class="n">where</span> <span class="n">record_no</span><span class="o">=</span><span class="mi">50</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The computer will select all weeks from the CHARTS file of record number 50 but will print only the lowest
+value of them.
+In fact, the value that is returned is the so -called debut week of this record: the week in which it entered the
+Top 10.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">count</span><span class="p">(</span><span class="n">record_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span>
+<span class="n">where</span> <span class="n">artist_no</span><span class="o">=</span><span class="mi">15</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Returns the number of entries in the table RECORDS that satisfy the condition. (Artist number 15 are The
+Beatles). The value is interpreted as the number of records the Beatles had in the charts.</p>
+<p>Aggregate functions in conjunction with a field
+Usually, the outcome of an aggregate function says something about a field, and you want this field to be
+printed as well.</p>
+<p>Example
+Suppose you want a list of all different countries, together with the number of artists from that country.</p>
+<p>For one country at a time, it would look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">count</span><span class="p">(</span><span class="n">artist_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">artists</span>
+<span class="n">where</span> <span class="n">country</span><span class="o">=</span><span class="s1">&#39;usa&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">count</span><span class="p">(</span><span class="n">artist_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">artists</span>
+<span class="n">where</span> <span class="n">country</span><span class="o">=</span><span class="s1">&#39;uk&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">count</span><span class="p">(</span><span class="n">artist_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">artists</span>
+<span class="n">where</span> <span class="n">country</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>and so on.</p>
+<p>In fact, you would first have to know all the possible country -values.
+What we would like, is a list of all countries, followed by a number, indicating the number of artists.</p>
+<p>This is the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">country</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">artist_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">artists</span>
+<span class="n">group</span> <span class="n">by</span> <span class="n">country</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The official SQL rule is:
+The GROUP BY clause combines rows from a SELECT statement into groups in which the specified
+column has the same value.
+Each group is reduced to a single row (which includes this value). After the word SELECT only the
+field that specifies the group may be named, together with aggregate functions (sum, min, max, avg,
+count) only.</p>
+<p>In our case, for each different value of country (because group by is followed by this field) one line is printed,
+which may contain the value of an aggregate function as well.</p>
+<p>Another example
+The number of artists per record company.
+For one record company it would be like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">count</span><span class="p">(</span><span class="n">record_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span>
+<span class="n">where</span> <span class="n">rec_co</span><span class="o">=</span><span class="mi">19</span><span class="p">;</span> <span class="p">(</span><span class="n">record</span> <span class="n">company</span> <span class="mi">19</span> <span class="ow">is</span> <span class="n">Capitol</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To have list that includes all record companies with the value of the aggregate functions we need group by :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">rec_co</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">record_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span>
+<span class="n">group</span> <span class="n">by</span> <span class="n">rec_co</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Sorting</p>
+<p>The clause order by results in the final list to appear in sorted order, by default in ascending order. Order
+by appears at the very end of a select statement, and you have to specify the field that defines the sorting.
+After this fieldname, you could specify desc to obtain descending order.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Example:</strong></p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">week</span><span class="p">,</span> <span class="n">position</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">charts</span>
+<span class="n">where</span> <span class="n">record_no</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">order</span> <span class="n">by</span> <span class="n">position</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>will return a list of chart positions of this record (‘A World Without Love’) is chronological order.
+Please note, that a table in a relational database need not be sorted!
+Remark: week doesn’t necessarily have to be part of the select clause, although it defines the sorting order.</p>
+<p>Linking files</p>
+<p>In our database, the entities, and thus the files, are related. SQL should be told about these relationship.
+Then SQL is able to connect values from one table to another.
+Linking two files is done by specifying the fields that should match in the where -claus.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Example:</strong>
+The artist_no in RECORDS relates to the artist_no in ARTISTS. In fact, they are the same.
+Suppose we want all record titles of songs released by Capitol Records (rec_co=19).
+First try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">title</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span>
+<span class="n">where</span> <span class="n">rec_co</span><span class="o">=</span><span class="mi">19</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>If we want to include artist names as well, we have to get these names from the ARTISTS table. The files
+are linked by the relationship</p>
+<p>records.artist_no = artists.artist_no
+Please note, that the fields are prefixed by the filename that they belong to.</p>
+<p>The command is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">title</span><span class="p">,</span> <span class="n">name</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span><span class="p">,</span> <span class="n">artists</span>
+<span class="n">where</span> <span class="n">records</span><span class="o">.</span><span class="n">artist_no</span><span class="o">=</span><span class="n">artists</span><span class="o">.</span><span class="n">artist_no</span>
+</pre></div>
+</div>
+<p>and rec_co=19;</p>
+<p>Remarks:</p>
+<ul class="simple">
+<li><p>After from, all files must be named that are involved in the selection.</p></li>
+<li><p>When fieldnames are ambiguous, filenames have to be stated in front of the fieldnames, in order to
+enable SQL to identify exactly which fields are meant.</p></li>
+<li><p>Leaving out the link would result in a disaster: in that case all artist names would be printed in
+conjunction with each record title (satisfying the condition): an enormous list, all garbage!</p></li>
+</ul>
+<p>In our running example only three links can be made (see box).</p>
+<p>Of course you can imagine real -life databases to have hundreds of links. Handling that need not be more
+difficult than handling three: it’s just more of the same.</p>
+<p>Questions 2</p>
+<p>a. Create a list of record numbers of records that were in the charts in week 20.
+b. Include positions in this list.
+c. Order the list by position.
+What you have now, is the basis of the week 20 hitparade. Of course, a real hitparade includes
+titles.
+d. Make a link with one of the other files, to include these record titles in this list.
+e. Make another link, to include artist names as well.
+What you should have by now, is a list that very much resembles a true hitparade. You might
+want to include the names of record companies as well.
+f. Make a list of record numbers, together with their first week in the charts (the so -called debut week ).
+Use of course one of the aggregate functions.
+g. List the no.1 hits of the Beatles (artist_no=15).
+Hint: first produce a list of all their hits, then select only those that reached the no.1 position.
+h. Make a list of record companies, that released records from the Beatles.
+i. Include the songtitles in this list.</p>
+<p>LINKS IN THE DATABASE TOP10USA</p>
+<p>artists.artist_no=records.artist_no</p>
+<p>records.rec_co=rec_comp.rec_co</p>
+<p>charts.record_no=records.record_no</p>
+<p>Chapte r 11 Files</p>
+<p>Creating ‘files’</p>
+<p>When you end a query with save as… command then a file will be created with the name that you specified
+and fieldnames you specified: just as many fieldnames as you specified in the select -clause.</p>
+<p>Eg.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">artists</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">records</span><span class="o">.</span><span class="n">title</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">artists</span><span class="p">,</span> <span class="n">records</span>
+<span class="n">where</span> <span class="n">artists</span><span class="o">.</span><span class="n">artist_no</span><span class="o">=</span><span class="n">records</span><span class="o">.</span><span class="n">artist_no</span>
+</pre></div>
+</div>
+<p>File|Save as… ‘songs’ {overwrite the previous name}</p>
+<p>The table SONGS can now be treated as an ordinary table.</p>
+<p>Remarks:</p>
+<ul class="simple">
+<li><p>Before you actually create the file, first check the output on the screen. When everything is found to
+be O kay, select the SQL -button and then goto File| save as… .</p></li>
+<li><p>The use of files is extremely important when you use aggregate functions. When you use aggregate
+functions, group by must be specified. When you save the results to a file, you don’t have to specify</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">group</span> <span class="n">by</span> <span class="n">again</span><span class="p">,</span> <span class="ow">and</span> <span class="n">consequently</span> <span class="n">you</span> <span class="n">are</span> <span class="n">no</span> <span class="n">longer</span> <span class="n">restricted</span> <span class="n">to</span> <span class="n">the</span> <span class="n">rules</span> <span class="n">of</span> <span class="n">group</span> <span class="n">by</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Using files can make your SQL life a lot easier. It can be used to break down a complicated question into
+smaller ones, and consequently breaks up a complicated SQL query (with possibly disastrous
+consequences when containing an error) into a few less complicated ones.</p>
+<p>Example
+You may want to be interested in which record company has released most records. That might be an
+interesting indication for the market position of record companies.
+The problem is to come up with the name of that record company.
+Think of the following: how would you solve this problem without SQL, from paper? Probably, you would
+first want to count the number of records per record company (and put these numbers on a piece of paper),
+and then have a look at that list and select the highest value.
+Files play the role of the piece of paper. Make a list of two columns, one for the record companies, and the
+second column containing the number of records released by that company.</p>
+<p>First try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">rec_co</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">record_no</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span>
+<span class="n">group</span> <span class="n">by</span> <span class="n">rec_co</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This will produce a list as follows:</p>
+<p>1 7
+2 1
+3 7
+4 1
+5 1
+… …</p>
+<p>in which the first column is the record company number, and the second one the amount of records released
+by that company.
+This list should be on the piece of paper , and then the highest value should be selected.
+In SQL, the piece of paper is replaced by the notion of file:</p>
+<p>Second try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">rec_co</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">record_no</span><span class="p">)</span> <span class="n">AS</span> <span class="n">amount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">records</span>
+<span class="n">group</span> <span class="n">by</span> <span class="n">rec_co</span>
+</pre></div>
+</div>
+<p>save as… ‘mosthits’</p>
+<p>The extra statements ‘AS amount’ is added to (re)name fieldname count(reocrd_no). The fieldname is now
+‘amount’ instate of ‘exp1001’. In general with the ‘AS’ statement you can rename every fieldname.</p>
+<p>Now the file MOSTHITS has been created, with two fields rec_co and amount , of course indicating the
+record company code and their respective amount of hits.</p>
+<p>Would you type</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mosthits</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>the complete list would be printed on the screen.
+Now it is not too difficult to find the record company/ies with the highest number of hits:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">rec_co</span><span class="p">,</span> <span class="n">amount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mosthits</span>
+<span class="n">where</span> <span class="n">amount</span> <span class="o">=</span> <span class="p">(</span><span class="n">select</span> <span class="nb">max</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mosthits</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Note that more than one record company code could be listed.</p>
+<ol class="arabic simple">
+<li><p>Example
+a. Try the example from the text above.</p></li>
+</ol>
+<p>b. If you did a good job, you should be able to include the name(s) of the record company/ies in the
+final SQL clause. The output should include not only rec_co but name (of the record company) as
+well.</p>
+<p>Questions 3</p>
+<p>Most Successful Artists</p>
+<p>If you fully understand the previous example, you should be able to follow the same pattern to answer the
+question:
+which artist(s) released most records</p>
+<p>(Hint: how would you proceed without SQL, so with pen and paper only?)</p>
+<p>The Highest Debut Position
+In the world of hit parades , many records can be set longest on the charts, most weeks on no.1 position,
+and so on. The record that we now will look at, is the highest debut position . Some records enter the
+charts at position 10, some at 9, et cetera. When a record enters the charts at a high position (4, or 3,
+maybe even higher) it is considered a sensational hit. In the next questions, we will find out which record
+was the biggest sensation (as to its debut position) in 1964.</p>
+<p>a. Produce a list of record numbers with their debut week numbers.</p>
+<p>b. Exclude from this list the records from week 1: they shouldn’t count, as they are all new entries. (Just
+add one extra line in the where part)</p>
+<p>c. Save this list to file; call this file DEBWEEK , with fields recond_no and debwk_no , (use here the ‘AS’
+statement two times).</p>
+<p>d. Have a look at this file, by issueing the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">debweek</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Do you exactly understand what the two columns stand for? (Be honest if you don’t!)</p>
+<p>e. Use this just created file DEBWEEK, to make a list including record numbers and the chart position
+of each record in their debut week.
+This list will then contain record numbers and debut positions.
+In other words, your output should look as follows:</p>
+<p>… …
+32 7
+33 4
+34 9
+… …</p>
+<p>in which the first column is the record number, and the second one is the position in the debut week.</p>
+<p>(Hint: positions can of course be found in the CHARTS table. One record occupies several positions
+in different weeks; you are only interested in one particular week: the debut week. In other words:
+week from the CHARTS table should be equal to debwk_no in the DEBWEEK table. You will of
+course have to link these files. Through which fields?)</p>
+<p>f. Save as… debposition with fieldnames rec_no, debpos. Then, after issueing the command, another
+file will have been created: DEBPOSITION.
+Have a look at this file, by typing</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">debposition</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Again, be honest if don’t fully understand the meaning of the columns.</p>
+<p>g. Use this file DEBPOSITION to find the record(s) with the highest debut position.</p>
+<p>h. Check the appropriate table to find the song title(s)</p>
+<p>Questions 4</p>
+<p>Song of the Year 1964
+Produce a hitparade of the ‘Song of the Year 1964’.
+(Including record title, artist name and total number of points).
+A record that was at position 10 in a certain week will get 1 point, at position 9 will get 2 points, and so on,
+and a song at the top position gets 10 points.
+The song that has most points in total will end up as the no.1 song of the year 1964, so at the first position
+of the list that you are asked to produce. Second most points will be the runner up, and so on.</p>
+<p>Hints:
+Use files, for the following purposes:
+First make a file, with the points for each record in a certain week.
+The number of points is computed by 11-position . (Here the rule is used that a computation may follow</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span><span class="p">)</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Your first command will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span>
+<span class="n">select</span> <span class="n">record_no</span><span class="p">,</span> <span class="mi">11</span> <span class="o">-</span><span class="n">position</span> <span class="n">AS</span> <span class="n">points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...</span>
+</pre></div>
+</div>
+<p>Then sum all these points per record (use SUM and GROUP BY ) and save this to another file.
+This file contains record numbers, together with the points total of that record.
+Then sort, and so on.</p>
+<p>Chapter12 Files in the database
+top10usa</p>
+<p>ARTISTS</p>
+<p>ARTIST_NO NAME COUNTRY</p>
+<p>.. …. ..
+31 the dave clark five uk
+32 betty everett usa
+33 the serendipity singers usa
+34 mary wells uk
+35 the 4 seasons usa
+36 danny williams usa
+37 roy orbison usa
+38 the dixie cups usa
+39 the ray charles singers usa
+40 the reflections usa
+41 peter &amp; gordon uk
+42 billy j. kramer uk
+43 barbra streisand usa
+44 millie small usa
+45 gerry &amp; the pacemakers uk
+46 the bachelors usa
+47 johnny rivers usa
+48 stan getz/astrud gilberto usa
+49 chuck berry usa
+50 roger miller usa
+51 the impressions usa
+52 dusty springfield uk
+53 dean martin usa
+54 the supremes usa
+.. …. …</p>
+<p>In total there are 77 entries in this table.</p>
+<p>RECORDS</p>
+<p>RECORD_NO TITLE ARTIST_NO REC_CO</p>
+<p>.. …. .. ..
+39 do you want to know a secret 15 24
+40 dead man’s curve 14 14
+41 bits and pieces 31 1
+42 my guy 34 31
+43 ronnie 35 3
+44 white on white 36 28
+45 love me do 15 26
+46 it’s over 37 32
+47 chapel of love 38 33
+48 love me with all your heart 39 34
+49 (just like) romeo &amp; juliet 40 35
+50 a world without love 41 19
+51 little children 42 36
+52 walk on by 18 17
+53 p.s. i love you 15 26
+54 people 43 12
+55 I get around 26 19
+56 my boy lollipop 44 37
+57 don’t let the sun catch you 45 38
+crying
+58 diane 46 39
+.. … .. ..</p>
+<p>In total there are 111 entries in this file.</p>
+<p>REC_COMP</p>
+<p>REC_CO NAME</p>
+<p>.. …
+15 okeh
+16 mercury
+17 scepter
+18 decca
+19 capitol
+20 swan
+21 rca
+22 abc
+23 20th century
+24 vee-jay
+25 montel
+26 tollie
+27 riviera
+28 united artists
+.. …</p>
+<p>In total there are 55 entries in this file.</p>
+<p>CHARTS</p>
+<p>WEEK RECORD_NO POSITION</p>
+<p>.. .. ..
+13 26 4
+14 26 5
+15 26 9
+9 27 9
+10 27 8
+11 30 10
+12 30 9
+12 31 7
+13 31 3
+.. .. ..</p>
+<p>In total there are 520 entries in this file.</p>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="chapter1-that-primary-keys-can-consist-of.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 1: that primary keys can consist of</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="chapter2-database-design-continued-15.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 2: Database Design (Continued) ………………………….. ………. 15</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By P.E. Broeksma & P.J. Kamphuis
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
