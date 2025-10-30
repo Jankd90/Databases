@@ -1,0 +1,40 @@
+name: deploy-book
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write  # allow pushing to gh-pages branch
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -U pip
+          pip install jupyter-book ghp-import
+
+      - name: Build Jupyter Book
+        working-directory: docs
+        run: jupyter-book build .
+
+      - name: Deploy to GitHub Pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          ghp-import -n -p -f docs/_build/html -r https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
