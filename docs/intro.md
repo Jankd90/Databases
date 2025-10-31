@@ -1,7 +1,7 @@
 # Welcome to the Database Reader  
-### Course: Data Communication and Data Processing  
-### Program: Elektrotechniek — Energy & Power Electronics  
-### Year: 2 | Period: 2  
+Course: Data Communication and Data Processing  
+Program: Elektrotechniek — Energy & Power Electronics  
+Year: 2 | Period: 2  
 
 ---
 
