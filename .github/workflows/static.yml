@@ -2,8 +2,8 @@ name: Deploy Jupyter Book
 
 on:
   push:
-    branches: [ main ]     # adjust if your default branch differs
-  workflow_dispatch:       # allow manual runs
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -32,7 +32,7 @@ jobs:
           pip install jupyter-book
 
       - name: Build the book
-        run: jupyter-book build .
+        run: jupyter-book build docs
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -40,7 +40,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _build/html
+          path: docs/_build/html
 
   deploy:
     needs: build
