@@ -4,15 +4,15 @@
 format: jb-book
 root: intro
 chapters:
-- file: Chapter1
-- file: Chapter2
-- file: Chapter3
-- file: Chapter4
-- file: Chapter5
-- file: Chapter6
-- file: Chapter7
-- file: Chapter8
-- file: Chapter9
-- file: Chapter10
-- file: Chapter11
+- file: chapter1
+- file: chapter2
+- file: chapter3
+- file: chapter4
+- file: chapter5
+- file: chapter6
+- file: chapter7
+- file: chapter8
+- file: chapter9
+- file: chapter10
+- file: chapter11
 

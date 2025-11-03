@@ -22,7 +22,7 @@ bibtex_bibfiles:
 # Information about where the book exists on the web
 repository:
   url: https://github.com/Jankd90/Databases  # Online location of your book
-  path_to_book: docs
+  path_to_book: .
   branch: main
 
 
