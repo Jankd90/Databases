@@ -33,12 +33,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install jupyter-book
 
+      # --- Sanity checks (key to your error) ---
+      - name: Verify book root and files
+        run: |
+          echo "Workspace tree (depth 2):"
+          find . -maxdepth 2 -printf "%y %p\n" | sort
+          echo
+          echo "Checking config files in docs/:"
+          test -f docs/_config.yml || { echo "ERROR: docs/_config.yml missing"; exit 1; }
+          test -f docs/_toc.yml     || { echo "ERROR: docs/_toc.yml missing"; exit 1; }
+          echo "OK: _config.yml and _toc.yml found."
+          echo
+          echo "List docs/:"
+          ls -la docs
+
+      # Optional: catch common TOC pitfalls (directories or case issues)
+      - name: Quick TOC validation
+        run: |
+          echo "TOC entries that resolve to directories (should be files):"
+          awk '/^(root:| *- +file:)/{print $NF}' docs/_toc.yml \
+          | sed 's/"//g;s/'"'"'//g' \
+          | while read P; do
+              [ -z "$P" ] && continue
+              # resolve against docs/
+              if [ -d "docs/$P" ]; then
+                echo "EISDIR candidate: docs/$P is a DIRECTORY (rename in _toc.yml to the actual file, e.g. $P.md)."
+              fi
+            done
+
       - name: Build the book
         working-directory: docs
         run: jupyter-book build .
 
       - name: Verify build output
-        run: ls -R docs/_build || echo "No build output found"
+        run: ls -R docs/_build || { echo "No build output found"; exit 1; }
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
