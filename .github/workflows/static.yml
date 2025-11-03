@@ -32,8 +32,9 @@ jobs:
       - name: Build the book
         run: |
           cd docs
-          ls -al
           jupyter-book build .
+          echo "----- BUILD OUTPUT STRUCTURE -----"
+          find _build/html -maxdepth 2 -type f | head -n 20
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
