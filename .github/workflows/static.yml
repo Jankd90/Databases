@@ -34,10 +34,10 @@ jobs:
           pip install jupyter-book
 
       - name: Build the book
-        run: jupyter-book build .
+        run: jupyter-book build docs
 
       - name: Verify build output
-        run: ls -R _build/html || echo "No build output found"
+        run: ls -R docs/_build || echo "No build output found"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -45,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _build/html
+          path: docs/_build/html
 
   deploy:
     needs: build
