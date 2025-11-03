@@ -6,7 +6,7 @@ server_ip = "0.0.0.0"
 server_port = 5000
 
 # SQLite database file
-database_file = r"C:\Users\jgm_6\OneDrive - Hanzehogeschool Groningen\Education\Databases\databases\databases\uitwerkingen Db\Databases 18-6-2024\PC script\PCpythonprogram\bme280data.db"
+database_file = r"C:\[YOUR_PATH]\bme280data.db"
 
 # --- create database and table if not exist ---
 def init_db():
