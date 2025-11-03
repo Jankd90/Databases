@@ -34,8 +34,8 @@ jobs:
           pip install jupyter-book
 
       - name: Build the book
-  	working-directory: docs
-  	run: jupyter-book build .
+        working-directory: docs
+        run: jupyter-book build .
 
       - name: Verify build output
         run: ls -R docs/_build || echo "No build output found"
