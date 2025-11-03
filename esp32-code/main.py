@@ -1,3 +1,7 @@
+#data communication & data processing
+#databases
+#Peter Kamphuis (kapj) Jos Bos (bosj)
+#date: 18 June 2024
 
 import machine
 import time
@@ -10,17 +14,16 @@ sda_pin = 19
 scl_pin = 18
 
 # IP-adres and port number of server
-server_ip = "192.168.2.5"
+server_ip = "192.168.2.9"
 server_port = 5000
 
-# BME280 I2C-address
-bme280_address = 0x76
 
 # Initialisation I2C
-#i2c = I2C(sda=machine.Pin(sda_pin), scl=machine.Pin(scl_pin))
+i2c = I2C(sda=machine.Pin(sda_pin), scl=machine.Pin(scl_pin))
+print('I2C scan result:', [hex(addr) for addr in i2c.scan()])
 
 # Initialisation BME280-sensor
-#bme = bme280.BME280(i2c=i2c)
+bme = bme280.BME280(i2c=i2c, address=0x77)
 
 # Function to send data via socket
 def send_data(data):
@@ -38,14 +41,12 @@ def main():
     try:
         # loop read data from sensor and send data
         while True:
-            #bme.read()
-            temperature = 1 #bme.temperature
-            humidity = 1 #bme.humidity
-            pressure = 1 #bme.pressure
+            bme.values()
+            temperature = bme.temperature()
+            humidity = bme.humidity()
+            pressure = bme.pressure()
 
-            # put data in string to send data
-            data = "Temperatuur: {:.2f} °C, Vochtigheid: {:.2f} %, Druk: {:.2f} hPa".format(
-                temperature, humidity, pressure)
+            data = "Temperatuur: {:.2f} °C, Vochtigheid: {:.2f} %, Druk: {:.2f} hPa".format(temperature, humidity, pressure)
             print(data)
             send_data(data)
 
@@ -57,3 +58,4 @@ def main():
 
 # Start main program
 main()
+
