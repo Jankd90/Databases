@@ -26,15 +26,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install jupyter-book
-        run: pip install -U jupyter-book
+      - name: Install Jupyter Book (stable version)
+        run: |
+          pip install --upgrade pip
+          pip install "jupyter-book==1.0.0"
 
       - name: Build the book
         run: |
           cd docs
-          jupyter-book build .
-          echo "----- BUILD OUTPUT STRUCTURE -----"
-          find _build/html -maxdepth 2 -type f | head -n 20
+          rm -rf _build
+          jupyter-book build --builder html .
+          echo "------ BUILD OUTPUT ------"
+          ls -R _build/html | head -n 30
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
