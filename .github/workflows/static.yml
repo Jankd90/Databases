@@ -3,6 +3,8 @@ name: Deploy Jupyter Book
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -32,7 +34,10 @@ jobs:
           pip install jupyter-book
 
       - name: Build the book
-        run: jupyter-book build docs
+        run: jupyter-book build .
+
+      - name: Verify build output
+        run: ls -R _build/html || echo "No build output found"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -40,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/_build/html
+          path: _build/html
 
   deploy:
     needs: build
