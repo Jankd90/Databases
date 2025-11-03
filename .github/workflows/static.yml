@@ -31,14 +31,14 @@ jobs:
 
       - name: Build the book
         run: |
-          cd Databases/docs   # inside nested folder created by GitHub checkout
+          cd docs
           ls -al
           jupyter-book build .
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: Databases/docs/_build/html
+          path: docs/_build/html
 
   deploy:
     needs: build
