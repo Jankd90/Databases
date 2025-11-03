@@ -2,7 +2,7 @@ name: Deploy Jupyter Book
 
 on:
   push:
-    branches: [ main/docs ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
