@@ -34,11 +34,10 @@ jobs:
           pip install jupyter-book
 
       - name: Build the book
-        working-directory: docs
-        run: jupyter-book build .
+        run: jupyter-book build docs
 
       - name: Verify build output
-        run: ls -R docs/_build || echo "No build output found"
+        run: ls -R docs/_build || { echo "No build output found"; exit 1; }
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
