@@ -62,7 +62,7 @@ Before engaging with this reader, students should be familiar with:
 - Data representation and communication protocols (from prior course modules).
 
 * Working knowledge of **Python** or **C** will aid in understanding examples that integrate database operations with system-level data processing.
-DITISEENTEST
+DITISEENTESTasdasdasdasdasdasdasd
 ---
 
 
