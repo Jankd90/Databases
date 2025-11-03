@@ -61,7 +61,7 @@ Before engaging with this reader, students should be familiar with:
 - Mathematical logic and set theory fundamentals.  
 - Data representation and communication protocols (from prior course modules).
 
-A working knowledge of **Python** or **C** will aid in understanding examples that integrate database operations with system-level data processing.
+* Working knowledge of **Python** or **C** will aid in understanding examples that integrate database operations with system-level data processing.
 
 ---
 
