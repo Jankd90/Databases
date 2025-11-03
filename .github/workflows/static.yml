@@ -31,7 +31,7 @@ jobs:
 
       - name: Build the book
         run: |
-          cd Databases/docs
+          cd Databases/docs   # inside nested folder created by GitHub checkout
           ls -al
           jupyter-book build .
 
