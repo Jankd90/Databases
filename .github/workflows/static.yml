@@ -32,7 +32,7 @@ jobs:
           pip install jupyter-book
 
       - name: Build the book
-        run: jupyter-book build docs
+        run: jupyter-book build docs --verbose
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
