@@ -10,6 +10,7 @@ This repository contains code for an ESP32-based data acquisition system using a
 * BME280 sensor (I²C interface)
 * Thonny IDE
 * Python 3.10+ on host computer
+* [DB browser](https://sqlitebrowser.org/)
 
 The Python host uses the following dependencies (see `requirements.txt`):
 
