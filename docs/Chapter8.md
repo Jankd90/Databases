@@ -1,217 +1,230 @@
-# Chapter 8 — Principle 8
+# Chapter 8 — Designing a Database
 
 ---
 
-## Introduction
+## AMERICAN TOP 10 — January 6, 1965
 
-In previous chapters, we have examined how to represent entities, relationships, and referential integrity within databases.  
-**Principle 8** addresses the correct **placement of derived or computed data** — ensuring that only *elementary facts* are stored in the database, while derived information is computed when needed.
+| TW | LW | TITLE                        | ARTISTS                     | RECORD COMPANY |
+|----|----|------------------------------|-----------------------------|----------------|
+| 1  | 1  | I Feel Fine                  | The Beatles                 | Capitol        |
+| 2  | 2  | Come See About Me            | The Supremes                | Motown         |
+| 3  | 3  | Mr. Lonely                   | Bobby Vinton                | Epic           |
+| 4  | 4  | She's a Woman                | The Beatles                 | Capitol        |
+| 5  | -  | Love Potion Number Nine      | The Searchers               | Kapp           |
+| 6  | 6  | Goin' Out of My Head         | Little Anthony and the Imperials | DCP       |
+| 7  | 5  | She's Not There              | The Zombies                 | Parrot         |
+| 8  | -  | Amen                         | The Impressions             | ABC            |
+| 9  | 9  | The Jerk                     | The Larks                   | Money          |
+| 10 | -  | The Wedding                  | Julie Rogers                | Mercury        |
 
-This principle ensures **data consistency**, **accuracy**, and **eliminates redundancy**.
+> **TW:** This week's position  
+> **LW:** Last week's position
+
+In the above table, you can see the **American Top 10 Hitparade** of the **first week of January 1965**.  
+Our workshops will deal with a **database** that contains **all data** on **every US Top 10 of 1964**.
 
 ---
 
-## Derived Data
+## DATABASE STRUCTURE
+```
 
-A *derived attribute* is one that can be calculated from other stored data.  
-Examples:
-- Total order value = SUM of line-item amounts  
-- Employee age = CURRENT_DATE – birth date  
-- Average salary per department = aggregate function of `SALARY`
+DATABASE └── consists of DATAFILES └── consist of RECORDS └── consist of FIELDS
 
-> 🧩 **Key Rule:**  
-> Derived data should **not** be stored directly in tables — it should be computed dynamically using queries or views.
+text
+
+````
+The **datafiles** usually have some **relationship** with each other — that is the reason why they are part of the **same database**.
 
 ---
 
-## Example — Orders and Order Lines
+## DESIGN PRINCIPLES
 
-### Entities and Relationships
+> 🧩 **Principle 1**  
+> Create a **separate file** for each **entity type**
 
-Each order consists of several order lines.  
-Each order line contains quantity and price.
+> 🧩 **Principle 2**  
+> Decide the **primary key**
 
-**Tables:**
+> 🧩 **Principle 3**  
+> Assign each **property** of an entity type to a **field** within the table representing that entity type
 
-```sql
-CREATE TABLE ORDER_HEADER (
-  ORDER_NO CHAR(6) PRIMARY KEY,
-  ORDER_DATE DATE
-);
+---
 
-CREATE TABLE ORDER_LINE (
-  ORDER_NO CHAR(6) REFERENCES ORDER_HEADER(ORDER_NO),
-  LINE_NO INT,
-  PRODUCT_ID CHAR(5),
-  QUANTITY INT,
-  PRICE DECIMAL(10,2),
-  PRIMARY KEY (ORDER_NO, LINE_NO)
-);
+### Entities
+
+**Entities** are persons, objects, or things that have **properties**, **characteristics**, or **attributes**.
+
+In our example, the entities are:
+
+- **Artists**  
+- **Records**  
+- **Record Companies**
+
+These are all entities with certain characteristics, like **name**, **title**, **country of origin**, and more.
+
+---
+
+## Applying the Principles
+
+### Principle 1 — Separate Files per Entity
+
+```text
+ARTISTS
+RECORDS
+REC_COMP  (short for Record Companies)
+````
+
+### Principle 2 — Primary Keys
+
+A **primary key** is a characteristic of an entity that **uniquely identifies** it — **no two entities** have the same primary key.
+
+Examples from daily life:
+
+- Bank account number
+- Telephone number
+- Customer number
+- Social security number (SoFi number)
+- Book’s **ISBN**
+
+> **Not a primary key:** PIN code (only 10,000 combinations — reused across millions of accounts)
+
+In our example: Each **song**, **artist**, and **record company** will be assigned a **unique number** within its file.
+
+### Principle 3 — Properties in the Right Table
+
+|Entity|Properties Stored|
+|---|---|
+|**Artists**|name, country|
+|**Records**|title|
+|**Rec. Co.**|name|
+
+> In a real-life database, many more fields would be included (e.g., date of birth, address). For simplicity, we restrict ourselves to a few.
+
+---
+
+## Building the Schema
+
+### Initial Tables
+
+
+```
+RECORDS     (record_no, title, ...)
+ARTISTS     (artist_no, name, country, ...)
+REC_COMP    (rec_co, name, ...)
+```
+
+## Relationships
+
+### Records ↔ Artists
+
+- A **record** is made by **one artist** (which may be a group)
+- An **artist** makes **one or more records**
+
+→ **One-to-many** relationship
+
+**Solution:** Include the **artist’s primary key** in the RECORDS table:
+
+text
+
+```
+RECORDS (record_no, title, artist_no, ...)
+```
+
+> Only the **key** is stored — not the full name or country. To get the artist name, **look up** artist_no in the ARTISTS table.
+
+---
+
+### Records ↔ Record Companies
+
+- A **record** is released by **one record company**
+- A **record company** releases **many records**
+
+→ **One-to-many**
+
+**Solution:** Include rec_co in RECORDS:
+
+text
+
+```
+RECORDS (record_no, title, artist_no, rec_co)
 ```
 
 ---
 
-### Incorrect Design
+## Chart Positions
 
-If the total order value is added as a stored column:
+To store **weekly positions**:
 
-```sql
-ALTER TABLE ORDER_HEADER ADD TOTAL_VALUE DECIMAL(12,2);
+text
+
+```
+CHARTS (week, record_no, position)
 ```
 
-This design introduces **redundancy** — the total can be calculated from `ORDER_LINE`.
+- For **52 weeks** in 1964 → **520 entries** (10 per week)
 
 ---
 
-### Correct Design
+## Final Database Structure
 
-Instead, calculate the total dynamically:
+text
 
-```sql
-SELECT ORDER_NO, SUM(QUANTITY * PRICE) AS TOTAL_VALUE
-FROM ORDER_LINE
-GROUP BY ORDER_NO;
 ```
+TOP10USA
 
-Or create a **view** for convenient retrieval:
-
-```sql
-CREATE VIEW ORDER_TOTAL AS
-SELECT ORDER_NO, SUM(QUANTITY * PRICE) AS TOTAL_VALUE
-FROM ORDER_LINE
-GROUP BY ORDER_NO;
-```
-
-This keeps data consistent while allowing easy computation of totals.
-
----
-
-## Principle 8 — Formal Definition
-
-> 🧩 **Principle 8**  
-> Only *elementary facts* should be stored in the database.  
-> Facts that can be **derived** from others should **not** be physically stored but computed when required.
-
----
-
-## Why Derived Data Should Not Be Stored
-
-| Reason | Description |
-|---------|--------------|
-| **Redundancy** | Duplicate information increases storage and inconsistency risk. |
-| **Update anomalies** | Updates in one table may require recalculating stored derived fields. |
-| **Integrity issues** | Inconsistencies arise if derived and base data are unsynchronized. |
-| **Efficiency** | Derived values can be computed via optimized queries or views. |
-
----
-
-## When Storing Derived Data May Be Justified
-
-In some exceptional cases, storing derived data can improve **performance**, especially for large datasets with complex calculations.
-
-**Example — Materialized Totals**
-
-```sql
-CREATE TABLE SALES_SUMMARY (
-  SALES_DATE DATE PRIMARY KEY,
-  TOTAL_SALES DECIMAL(12,2)
-);
-```
-
-This is acceptable only if:
-- The derived data is **periodically recalculated** (e.g., nightly batch process).
-- **Triggers** or **procedures** ensure synchronization.
-
----
-
-### Example — Using Triggers to Maintain Derived Data
-
-```sql
-CREATE TRIGGER update_sales_summary
-AFTER INSERT OR UPDATE ON SALES
-FOR EACH ROW
-BEGIN
-  UPDATE SALES_SUMMARY
-  SET TOTAL_SALES = (
-    SELECT SUM(AMOUNT)
-    FROM SALES
-    WHERE SALES_DATE = NEW.SALES_DATE
-  )
-  WHERE SALES_DATE = NEW.SALES_DATE;
-END;
-```
-
-This ensures that the summary table remains consistent with the detailed data.
-
----
-
-## Derived vs. Stored Attributes — Comparison
-
-| Type | Example | Stored? | Notes |
-|------|----------|----------|-------|
-| Base attribute | `EMPLOYEE.SALARY` | Yes | Elementary fact |
-| Derived attribute | `AGE = CURRENT_DATE - BIRTH_DATE` | No | Calculated |
-| Aggregate value | `AVG(SALARY)` | No | Computed using query |
-| Materialized summary | `TOTAL_SALES` | Conditional | Stored only for optimization |
-
----
-
-## Example — Employee Age
-
-Instead of storing age directly:
-
-```sql
-CREATE TABLE EMPLOYEE (
-  EMPNO CHAR(5) PRIMARY KEY,
-  NAME VARCHAR(50),
-  BIRTH_DATE DATE
-);
-```
-
-Calculate on demand:
-
-```sql
-SELECT NAME, FLOOR(DATEDIFF(CURDATE(), BIRTH_DATE) / 365) AS AGE
-FROM EMPLOYEE;
+├─ RECORDS     (record_no, title, artist_no, rec_co)
+├─ ARTISTS     (artist_no, name, country)
+├─ REC_COMP    (rec_co, name)
+└─ CHARTS      (week, record_no, position)
 ```
 
 ---
 
-## Data Normalization Context
+## Key Design Benefits
 
-Principle 8 reinforces the **Third Normal Form (3NF)**:
+> **No redundancy** — each fact stored **once**:
 
-> “Every non-key attribute must depend directly on the key — and nothing else.”
+|Data|Stored In|Appears Only Once?|
+|---|---|---|
+|Artist name|ARTISTS|Yes|
+|Artist country|ARTISTS|Yes|
+|Record company|REC_COMP|Yes|
 
-Derived data violates this rule because it depends on other attributes, not the key itself.
+Even though **The Beatles** have **two songs** in the chart → their info is stored **only once**. Same for **Capitol Records**.
 
 ---
 
-## Exercises
+## Last Week’s Position?
 
-### Exercise 1 — Identify Derived Data
+> **Not stored separately** **Why?** It can be **retrieved** from existing data.
 
-> Examine the following attributes and identify which should be stored and which should be derived:
-> - `TOTAL_SALARY`
-> - `AGE`
-> - `EMPLOYEE_NAME`
-> - `HOURS_WORKED`
-> - `TOTAL_HOURS`
+**Example:** Current week = **34** Want last week’s position of a record?
 
-### Exercise 2 — Create a View
+sql
 
-> Write a SQL view that shows each department’s total salary cost using the `EMPLOYEE` table.
+```
+SELECT position
+FROM CHARTS
+WHERE week = 33
+  AND record_no = ?
+```
+
+> **Rule of Thumb:** _Don’t store what you can **calculate** or **look up**._
 
 ---
 
 ## Summary
 
-- **Principle 8** ensures only *base facts* are stored in databases.  
-- Derived or computed values should be **calculated dynamically**.  
-- Avoid storing redundant information to maintain integrity.  
-- Exceptions exist for performance — use **materialized summaries** with **controlled synchronization**.
+> ✅ **Good database design** follows three principles:
+> 
+> 1. **One table per entity**
+> 2. **Unique primary key** per record
+> 3. **Each fact in exactly one place**
 
-> ✅ **Design Rule:**  
-> Store only fundamental data. Compute derived values through queries or views.
+> **Relationships** are represented using **foreign keys** — not duplicated data.
 
----
+> **Result:**
+> 
+> - **No redundancy**
+> - **Easy updates**
+> - **Scalable and consistent**

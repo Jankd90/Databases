@@ -1,234 +1,182 @@
-# Chapter 4 — Principle 4
+# Chapter 4 — Views
 
 ---
 
-## Introduction
+## INTRODUCTION
 
-In the previous chapters, we developed database design principles for entities and relationships.  
-This chapter introduces **Principle 4**, which deals with representing **one-to-many relationships** between entities.
-
----
-
-## Example — Departments and Employees
-
-We revisit the familiar scenario:
-
-> A company has several departments, each employing multiple employees.  
-> Each employee works in exactly one department.
-
-From this, we identify a **one-to-many relationship**:
-- **One department** → many employees  
-- **Each employee** → one department
+As **indexes** are tables that are **transparent** — which means they *do exist* but the user **cannot see their presence** — **views** are **visible to the user**, but actually **they do not exist**; they are **virtual tables**.
 
 ---
 
-### Step 1 — Entities and Attributes
+## EXAMPLES OF VIEWS
 
-**DEPARTMENT**
-- DEPTNO — Department number (unique)  
-- NAME — Department name  
-- MGR_EMPNO — Manager’s employee number  
-- BUDGET — Department budget  
-
-**EMPLOYEE**
-- EMPNO — Employee number (unique)  
-- NAME — Employee name  
-- JOB — Job title  
-- SALARY — Monthly salary  
+**Views** are very common when using a database. In fact, a **view** consists of a **selection of records or fields (or both)** from one or more **data tables**.
 
 ---
 
-### Step 2 — Relational Schema
+### 1. Record Subset from One Table
 
-To represent the one-to-many relationship, add a **foreign key** to the “many” side — the `EMPLOYEE` table.
+```text
+┌───────────────────────────────────┐
+│           ORIGINAL TABLE          │
+├─────┬───────┬────────┬────────────┤
+│ ID  │ TITLE │ TYPE   │ PRICE      │
+├─────┼───────┼────────┼────────────┤
+│ 101 │ News  │ Daily  │ 2.50       │
+│ 102 │ Time  │ Weekly │ 4.00       │
+│ 103 │ Life  │ Weekly │ 5.50       │
+│ 104 │ Tech  │ Monthly│ 8.00       │
+└─────┴───────┴────────┴────────────┘
 
-```sql
-CREATE TABLE DEPARTMENT (
-  DEPTNO CHAR(3) PRIMARY KEY,
-  NAME VARCHAR(40),
-  MGR_EMPNO CHAR(5),
-  BUDGET DECIMAL(10,2)
-);
+          ▲
+          │
+          ▼
 
-CREATE TABLE EMPLOYEE (
-  EMPNO CHAR(5) PRIMARY KEY,
-  NAME VARCHAR(50),
-  JOB VARCHAR(30),
-  SALARY DECIMAL(10,2),
-  DEPTNO CHAR(3) REFERENCES DEPARTMENT(DEPTNO)
-);
-```
+┌───────────────────────────────────┐
+│               VIEW                │
+├─────┬───────┬────────┬────────────┤
+│ ID  │ TITLE │ TYPE   │ PRICE      │
+├─────┼───────┼────────┼────────────┤
+│ 102 │ Time  │ Weekly │ 4.00       │
+│ 103 │ Life  │ Weekly │ 5.50       │
+└─────┴───────┴────────┴────────────┘
+````
 
----
-
-### Step 3 — Data Example
-
-| DEPTNO | NAME | MGR_EMPNO | BUDGET |
-|--------|------|------------|---------|
-| M27 | Education | 42713 | 200000 |
-| K82 | IT | 53321 | 300000 |
-
-| EMPNO | NAME | JOB | SALARY | DEPTNO |
-|-------|------|-----|---------|--------|
-| 61126 | Adams | Secretary | 25000 | M27 |
-| 42713 | Cook | Manager | 50000 | M27 |
-| 53321 | Smith | Analyst | 42000 | K82 |
-| 55902 | Lee | Developer | 39000 | K82 |
+In the above diagram, you can see a **view** that consists of a **selection of records** from a **single data table**. The view ensures that the user is only dealing with **records needed for a specific operation** — for example, **weekly magazines**.
 
 ---
 
-### Step 4 — Example Queries
+### 2. Field Subset from Multiple Tables
 
-Retrieve all employees from a specific department:
-
-```sql
-SELECT EMPNO, NAME, JOB, SALARY
-FROM EMPLOYEE
-WHERE DEPTNO = 'M27'
-ORDER BY NAME;
-```
-
-Calculate the average salary per department:
-
-```sql
-SELECT DEPTNO, AVG(SALARY)
-FROM EMPLOYEE
-GROUP BY DEPTNO;
-```
-
-Retrieve departments with budgets over 250,000:
-
-```sql
-SELECT NAME, BUDGET
-FROM DEPARTMENT
-WHERE BUDGET > 250000;
-```
-
----
-
-## Principle 4 — Formal Definition
-
-> 🧩 **Principle 4**  
-> Represent each *one-to-many* relationship by including the **primary key** of the “one” table as a **foreign key** in the “many” table.
-
-This ensures referential integrity and allows efficient retrieval of related data.
-
----
-
-## Example — Projects and Tasks
-
-Consider another case:
-
-> Each project consists of multiple tasks.  
-> Each task belongs to one project.
-
-### Schema
-
-```sql
-CREATE TABLE PROJECT (
-  PROJNO CHAR(4) PRIMARY KEY,
-  DESCRIPTION VARCHAR(80)
-);
-
-CREATE TABLE TASK (
-  TASKNO CHAR(5) PRIMARY KEY,
-  DESCRIPTION VARCHAR(80),
-  HOURS INT,
-  PROJNO CHAR(4) REFERENCES PROJECT(PROJNO)
-);
-```
-
-Here, `PROJNO` in `TASK` represents the one-to-many relationship between projects and tasks.
-
----
-
-## Visual Representation
+text
 
 ```
-DEPARTMENT (1) ──────────< EMPLOYEE (N)
-     │                        │
-     │                        │
-  Primary Key             Foreign Key (DEPTNO)
+┌─────────────────────┐     ┌─────────────────────┐
+│     CUSTOMERS       │     │       ORDERS        │
+├─────┬───────┬───────┤     ├─────┬───────┬───────┤
+│ ID  │ NAME  │ CITY  │     │ ID  │ CUSTID│ AMOUNT│
+├─────┼───────┼───────┤     ├─────┼───────┼───────┤
+│ C1  │ Smith │ London│     │ O1  │ C1    │ 250   │
+│ C2  │ Jones │ Paris │     │ O2  │ C1    │ 180   │
+└─────┴───────┴───────┘     └─────┴───────┴───────┘
+
+          ▲          ▲
+          │          │
+          ▼          ▼
+
+┌───────────────────────────────┐
+│               VIEW            │
+├───────┬───────┬───────┬───────┤
+│ NAME  │ CITY  │ ORDER │ AMOUNT│
+├───────┼───────┼───────┼───────┤
+│ Smith │ London│ O1    │ 250   │
+│ Smith │ London│ O2    │ 180   │
+└───────┴───────┴───────┴───────┘
 ```
 
-The arrow indicates that many employees belong to one department.
+In the next diagram, you can see a **view** consisting of a **selection of fields** from **two data tables**. This type of view is very useful when:
+
+- A table has **many fields**
+- You want to **combine information** from several tables
+- The **database administrator** wants to **impose a view** to **hide confidential fields** from certain users
+
+> **Security Benefit:** Some users see **one subset of fields**; others see **another**. **Sensitive data** is **hidden** from unauthorized users.
 
 ---
 
-## Referential Integrity
+### 3. Combined Record + Field Subset
 
-The **foreign key constraint** guarantees that:
+text
 
-- Every `EMPLOYEE.DEPTNO` exists in `DEPARTMENT.DEPTNO`.  
-- No employee can reference a non-existent department.
+```
+┌───────────────────────────────────┐
+│           ORIGINAL TABLES         │
+├─────┬───────┬────────┬────────────┤
+│ ID  │ TITLE │ TYPE   │ PRICE      │
+├─────┼───────┼────────┼────────────┤
+│ 101 │ News  │ Daily  │ 2.50       │
+│ 102 │ Time  │ Weekly │ 4.00       │
+│ 103 │ Life  │ Weekly │ 5.50       │
+└─────┴───────┴────────┴────────────┘
 
-### Example of Violation
+          ▲
+          │
+          ▼
 
-```sql
-INSERT INTO EMPLOYEE (EMPNO, NAME, JOB, SALARY, DEPTNO)
-VALUES ('88888', 'Clark', 'Trainer', 28000, 'Z99');
+┌─────────────────────────────┐
+│            VIEW             │
+├───────┬────────┬────────────┤
+│ TITLE │ TYPE   │ PRICE      │
+├───────┼────────┼────────────┤
+│ Time  │ Weekly │ 4.00       │
+│ Life  │ Weekly │ 5.50       │
+└───────┴────────┴────────────┘
 ```
 
-If department `Z99` doesn’t exist, the system rejects the insertion.
+Combining **record subset** and **field subset** gives a **focused, application-specific view**.
 
 ---
 
-## Deletion and Update Rules
+## VIRTUAL FIELD
 
-Foreign key constraints can specify **referential actions**.
+Another powerful feature of views is the ability to create a **virtual field** — a field that **appears** to be part of a data table, but **actually isn't**.
 
-```sql
-ALTER TABLE EMPLOYEE
-ADD CONSTRAINT FK_DEPT
-FOREIGN KEY (DEPTNO)
-REFERENCES DEPARTMENT(DEPTNO)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
+### Example: Currency Conversion
+
+text
+
+```
+┌───────────────────────────────────┐
+│           ORIGINAL TABLE          │
+├─────┬───────┬────────┬────────────┤
+│ ID  │ ITEM  │ CURRENCY │ PRICE    │
+├─────┼───────┼──────────┼──────────┤
+│ P1  │ Bolt  │ EUR      │ 15.50    │
+│ P2  │ Nut   │ USD      │ 12.00    │
+└─────┴───────┴──────────┴──────────┘
+
+          ▲
+          │
+          ▼
+
+┌───────────────────────────────────────────┐
+│                 VIEW                      │
+├─────┬───────┬──────────┬──────────────────┤
+│ ID  │ ITEM  │ CURRENCY │ PRICE_IN_GUILDERS│
+├─────┼───────┼──────────┼──────────────────┤
+│ P1  │ Bolt  │ EUR      │ 34.16            │
+│ P2  │ Nut   │ USD      │ 26.40            │
+└─────┴───────┴──────────┴──────────────────┘
 ```
 
-- **ON DELETE CASCADE:** Deleting a department automatically deletes all employees in it.  
-- **ON UPDATE CASCADE:** Changing a department number updates all references.
+> **Note:** PRICE_IN_GUILDERS is **computed** using CURRENCY and PRICE — it **does not exist** in the base table.
 
-Use cascading actions cautiously to prevent accidental mass deletions.
+sql
 
----
-
-## Comparison with Other Relationships
-
-| Relationship Type | Implementation |
-|--------------------|----------------|
-| One-to-One | Either table may contain foreign key |
-| One-to-Many | “Many” table includes foreign key |
-| Many-to-Many | Create separate linking table |
-
----
-
-## Exercises
-
-### Exercise 1 — Courses and Students
-
-> Each course may have several students.  
-> Each student takes exactly one course.
-
-Design the tables `COURSE` and `STUDENT`, showing the foreign key relationship.
-
----
-
-### Exercise 2 — Referential Integrity Test
-
-Add a record to the “many” table referencing a non-existent record in the “one” table.  
-Observe the system’s response.
+```
+CREATE VIEW V_ITEMS_GUILDERS AS
+SELECT 
+  ID,
+  ITEM,
+  CURRENCY,
+  CASE 
+    WHEN CURRENCY = 'EUR' THEN PRICE * 2.20371
+    WHEN CURRENCY = 'USD' THEN PRICE * 2.20
+    ELSE PRICE
+  END AS PRICE_IN_GUILDERS
+FROM ITEMS;
+```
 
 ---
 
 ## Summary
 
-- Principle 4 handles **one-to-many** relationships.  
-- Implemented by placing a **foreign key** in the “many” table.  
-- Ensures **referential integrity**.  
-- Cascading options control how deletions and updates propagate.
+> ✅ **Views are virtual tables** that:
+> 
+> - **Filter records** (subset of rows)
+> - **Select fields** (subset of columns)
+> - **Join multiple tables**
+> - **Compute virtual fields**
+> - **Enforce security** by hiding sensitive data
 
-> ✅ **Design Rule:**  
-> Every foreign key enforces a valid, consistent relationship between entities.
-
----
+> **Rule of Thumb:** _Use views to give users **exactly what they need** — and **nothing more**._

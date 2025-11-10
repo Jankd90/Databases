@@ -1,250 +1,108 @@
-# Chapter 5 — Principle 5
+# Chapter 5 — Integrity
 
 ---
 
-## Introduction
+## INTRODUCTION
 
-So far, we have learned to represent:
-- **Entities** (Principles 1–3)  
-- **One-to-many relationships** (Principle 4)  
+- **Security** involves ensuring that users are **allowed** to do the things they are trying to do.  
+- **Integrity** involves ensuring that the things they are trying to do are **correct**.
 
-In this chapter, we study **many-to-many relationships** and introduce **Principle 5**, which explains how to represent them using a separate linking table.
-
----
-
-## Example — Suppliers and Parts
-
-A company uses many parts supplied by multiple suppliers.  
-Each **supplier** can supply many **parts**, and each **part** can be supplied by many **suppliers**.
-
-This is a **many-to-many** relationship.
+Or to put it otherwise:  
+> **Security** means protecting the database against **unauthorized users**;  
+> **Integrity** means protecting it against **authorized users**.
 
 ---
 
-### Step 1 — Entities and Attributes
+## SOME ASPECTS OF INTEGRITY
 
-**SUPPLIER**
-- SUPPNO — Supplier number (unique)  
-- SNAME — Supplier name  
-- STATUS — Supplier rating  
-- CITY — Supplier location  
+### 1. Primary Key Uniqueness
 
-**PART**
-- PARTNO — Part number (unique)  
-- PNAME — Part name  
-- COLOR — Color  
-- WEIGHT — Weight  
-- CITY — Manufacturing location  
-
-The relationship “supplies” connects **SUPPLIER** and **PART**, and includes an attribute **QUANTITY**.
-
----
-
-### Step 2 — Relational Schema
-
-We must create a separate table to represent the relationship.
+Every table **must have a primary key** — uniquely identifying each record.  
+The **DBMS must guarantee** that **no two records** have the same primary key.
 
 ```sql
-CREATE TABLE SUPPLIER (
-  SUPPNO CHAR(3) PRIMARY KEY,
-  SNAME VARCHAR(40),
-  STATUS INT,
-  CITY VARCHAR(40)
+CREATE TABLE EMPLOYEE (
+  EMPNO CHAR(5) PRIMARY KEY,  -- Enforced uniqueness
+  NAME VARCHAR(50)
 );
-
-CREATE TABLE PART (
-  PARTNO CHAR(3) PRIMARY KEY,
-  PNAME VARCHAR(40),
-  COLOR VARCHAR(20),
-  WEIGHT DECIMAL(5,2),
-  CITY VARCHAR(40)
-);
-
-CREATE TABLE SHIPMENT (
-  SUPPNO CHAR(3) REFERENCES SUPPLIER(SUPPNO),
-  PARTNO CHAR(3) REFERENCES PART(PARTNO),
-  QUANTITY INT,
-  PRIMARY KEY (SUPPNO, PARTNO)
-);
-```
-
-The **SHIPMENT** table resolves the many-to-many relationship between suppliers and parts.
+````
 
 ---
 
-### Step 3 — Example Data
+### 2. Foreign Key Referential Integrity
 
-| SUPPNO | SNAME | STATUS | CITY   |
-|--------|--------|---------|--------|
-| S1 | Smith | 20 | London |
-| S2 | Jones | 10 | Paris  |
-| S3 | Blake | 30 | Paris  |
-| S4 | Clark | 20 | London |
+Some tables include **foreign keys**. A **foreign key must match** an existing **primary key** in another table.
 
-| PARTNO | PNAME | COLOR | WEIGHT | CITY |
-|--------|--------|--------|--------|------|
-| P1 | Nut | Red | 12 | London |
-| P2 | Bolt | Green | 17 | Paris |
-| P3 | Screw | Blue | 17 | Rome |
-| P4 | Cog | Red | 19 | London |
+The **DBMS must enforce** this rule:
 
-| SUPPNO | PARTNO | QUANTITY |
-|--------|---------|----------|
-| S1 | P1 | 300 |
-| S1 | P2 | 200 |
-| S2 | P2 | 400 |
-| S3 | P1 | 300 |
-| S4 | P4 | 250 |
+|Situation|Problem|DBMS Action|
+|---|---|---|
+|Delete referenced record|Foreign key points to **nothing**|**Prevent deletion** or **cascade**|
+|Update primary key|Foreign keys become **invalid**|**Update all related foreign keys**|
+|Insert invalid foreign key|Refers to **non-existent record**|**Reject insert**|
 
----
+sql
 
-### Step 4 — Example Queries
-
-List all parts supplied by supplier `S1`:
-
-```sql
-SELECT P.PARTNO, P.PNAME, P.COLOR
-FROM PART P
-JOIN SHIPMENT SH ON P.PARTNO = SH.PARTNO
-WHERE SH.SUPPNO = 'S1';
 ```
-
-Find suppliers who supply the part `P2`:
-
-```sql
-SELECT S.SUPPNO, S.SNAME, S.CITY
-FROM SUPPLIER S
-JOIN SHIPMENT SH ON S.SUPPNO = SH.SUPPNO
-WHERE SH.PARTNO = 'P2';
-```
-
-Compute total parts shipped per supplier:
-
-```sql
-SELECT SUPPNO, SUM(QUANTITY) AS TOTAL_QUANTITY
-FROM SHIPMENT
-GROUP BY SUPPNO;
+ALTER TABLE EMPLOYEE
+  ADD FOREIGN KEY (DEPTNO)
+  REFERENCES DEPARTMENT(DEPTNO)
+  ON DELETE RESTRICT
+  ON UPDATE CASCADE;
 ```
 
 ---
 
-## Principle 5 — Formal Definition
+### 3. Format Constraints (Domain Integrity)
 
-> 🧩 **Principle 5**  
-> Represent every *many-to-many* relationship by creating a separate table.  
-> The **primary key** of this table is the **combination** of the primary keys of the related entity tables.
+**Format constraints** help prevent **obvious mistakes**:
 
-### Explanation
+|Field Type|Allowed Values|Example|
+|---|---|---|
+|Number|Digits only|SALARY DECIMAL(10,2)|
+|Text|Capitals only|STATUS CHAR(1) CHECK (STATUS IN ('A','I'))|
+|Postcode|4 digits + 2 letters|POSTCODE CHAR(6) CHECK (POSTCODE REGEXP '^[0-9]{4}[A-Z]{2}$')|
+|Date|Valid dates only|BIRTHDATE DATE|
 
-This rule:
-1. Eliminates redundancy.  
-2. Ensures referential integrity.  
-3. Allows attributes (like `QUANTITY`) to describe the relationship itself.  
+> In **Paradox for Windows**, defining a **field type** is itself a **format constraint**. A Date field accepts **only valid dates** → prevents _blunt mistakes_.
 
----
+sql
 
-## Step 5 — Complex Relationships
-
-Sometimes, a relationship may involve more than two entities — for example:
-
-> “Each supplier supplies parts to specific projects.”
-
-This becomes a **many-to-many-to-many** relationship.
-
-```sql
-CREATE TABLE PROJECT (
-  PROJNO CHAR(3) PRIMARY KEY,
-  DESCRIPTION VARCHAR(80)
-);
-
-CREATE TABLE SHIPMENT (
-  SUPPNO CHAR(3) REFERENCES SUPPLIER(SUPPNO),
-  PARTNO CHAR(3) REFERENCES PART(PARTNO),
-  PROJNO CHAR(3) REFERENCES PROJECT(PROJNO),
-  QUANTITY INT,
-  PRIMARY KEY (SUPPNO, PARTNO, PROJNO)
+```
+CREATE TABLE PERSON (
+  ID CHAR(8) PRIMARY KEY,
+  BIRTHDATE DATE CHECK (BIRTHDATE >= '1900-01-01')
 );
 ```
 
-Here the composite key `(SUPPNO, PARTNO, PROJNO)` uniquely identifies each shipment.
-
 ---
 
-## Visual Representation
+## Limitations of Integrity Enforcement
 
-```
-SUPPLIER (1) ───< SHIPMENT >───(1) PART
-     |                         |
-     |                         |
-Primary Key            Primary Key
-```
+> **No computer system can ensure _complete_ integrity.**
 
-The relationship table sits between the two entities, connecting them through foreign keys.
+Even with:
 
----
+- Primary key enforcement
+- Foreign key checks
+- Format constraints
 
-## Referential Integrity
+**Subtle errors** can still occur:
 
-The **SHIPMENT** table maintains valid relationships between suppliers and parts.
-
-- Every `SUPPNO` must exist in `SUPPLIER`.  
-- Every `PARTNO` must exist in `PART`.  
-- Deleting a supplier or part may cascade to delete related shipment records.
-
-Example with cascading constraints:
-
-```sql
-ALTER TABLE SHIPMENT
-ADD CONSTRAINT FK_SUPPLIER
-FOREIGN KEY (SUPPNO)
-REFERENCES SUPPLIER(SUPPNO)
-ON DELETE CASCADE;
-
-ALTER TABLE SHIPMENT
-ADD CONSTRAINT FK_PART
-FOREIGN KEY (PARTNO)
-REFERENCES PART(PARTNO)
-ON DELETE CASCADE;
-```
-
----
-
-## Advantages of Principle 5
-
-| Advantage | Description |
-|------------|-------------|
-| Normalization | Avoids duplication of part or supplier data |
-| Flexibility | Allows adding/removing relationships easily |
-| Integrity | Maintains consistency across tables |
-| Extensibility | Enables extra attributes for relationships (e.g., quantity, date, cost) |
-
----
-
-## Exercises
-
-### Exercise 1 — Books and Authors
-
-> Each book may have multiple authors.  
-> Each author may write multiple books.  
-
-Design the tables `BOOK`, `AUTHOR`, and `AUTHORSHIP`.
-
-### Exercise 2 — Enrollment
-
-> Students enroll in many courses, and each course has many students.  
-
-Design a relational schema implementing this scenario with foreign keys and composite primary keys.
+|Example|Why It Passes Checks|
+|---|---|
+|Salary = 5000 for a janitor|Within numeric range|
+|Birthdate = 2025-01-01 for a 50-year-old|Valid date format|
+|Two employees with same phone number|No uniqueness rule|
 
 ---
 
 ## Summary
 
-- **Principle 5** handles *many-to-many* relationships.  
-- Represent such relationships using a separate **linking table**.  
-- The linking table’s primary key combines the keys of both entities.  
-- Relationship-specific attributes belong in the linking table.  
+> ✅ **Integrity** is about **correctness**, not just **access**. The DBMS helps with:
+> 
+> - **Uniqueness** (Primary Keys)
+> - **Referential accuracy** (Foreign Keys)
+> - **Format validity** (Domain Constraints)
 
-> ✅ **Design Rule:**  
-> Every many-to-many relationship must be explicitly represented by its own table.
-
----
+> **Rule of Thumb:** _The system prevents **silly mistakes** — but **smart mistakes** require **application logic** and **human judgment**._

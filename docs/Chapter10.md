@@ -1,238 +1,225 @@
-# Chapter 10 — Principle 10
+# Getting Familiar — SQL Practice
 
 ---
 
-## Introduction
+## Instructions
 
-In this final stage of relational database design, **Principle 10** addresses the treatment of **redundant relationships** and **derived connections**.  
-It ensures that every relationship represented in the database is **logically necessary** and not derivable from existing ones.
-
-This principle completes the normalization process by enforcing **semantic minimalism** — storing only essential relationships.
-
----
-
-## Redundant Relationships
-
-A *redundant relationship* occurs when a connection between two entities can be **derived** through other relationships.
-
-### Example — Departments, Employees, and Projects
-
-Assume:
-- Each **Department** employs multiple **Employees**.
-- Each **Employee** works on one or more **Projects**.
-- Each **Project** is managed by one **Department**.
-
-Diagrammatically:
-
-```
-DEPARTMENT ──< EMPLOYEE ──< WORKS_ON >── PROJECT
-  │                                     ^
-  └─────────────────────────────────────┘
-```
-
-The direct link between `DEPARTMENT` and `PROJECT` is **redundant**, since it can be derived through `EMPLOYEE`.
+> **Type your selection of commands** that we discussed above, to see how things work.  
+> If you **mistype** a command, SQL will give a **warning** in a message box.  
+> Select the **SQL icon** on the speed bar if you want to make **changes** to the command.
 
 ---
 
-## Principle 10 — Formal Definition
+## Questions 1 — Find Answers Using SQL Only!
 
-> 🧩 **Principle 10**  
-> Eliminate any relationship that can be **logically derived** from existing relationships between the same entities.
-
-This principle avoids unnecessary duplication, circular dependencies, and inconsistent data paths.
+> **Let the computer do the entire job!**  
+> **No cheating** — no manual lookup!
 
 ---
 
-## Example — Correct Design
+### a. What hits did **The Beatles** have?
 
-We represent only the **essential** relationships.
+#### Step 1 — Find `artist_no`
 
 ```sql
-CREATE TABLE DEPARTMENT (
-  DEPTNO CHAR(3) PRIMARY KEY,
-  NAME VARCHAR(40)
-);
+SELECT artist_no
+FROM   artists
+WHERE  name = 'The Beatles';
+````
 
-CREATE TABLE EMPLOYEE (
-  EMPNO CHAR(5) PRIMARY KEY,
-  NAME VARCHAR(50),
-  DEPTNO CHAR(3) REFERENCES DEPARTMENT(DEPTNO)
-);
+> **Result:** (Assume 15)
 
-CREATE TABLE PROJECT (
-  PROJNO CHAR(4) PRIMARY KEY,
-  DESCRIPTION VARCHAR(100)
-);
+---
 
-CREATE TABLE WORKS_ON (
-  EMPNO CHAR(5) REFERENCES EMPLOYEE(EMPNO),
-  PROJNO CHAR(4) REFERENCES PROJECT(PROJNO),
-  PRIMARY KEY (EMPNO, PROJNO)
+#### Step 2 — Find song titles
+
+sql
+
+```
+SELECT title
+FROM   records
+WHERE  artist_no = 15;
+```
+
+---
+
+#### One Single Command (Nested)
+
+sql
+
+```
+SELECT title
+FROM   records
+WHERE  artist_no = (
+    SELECT artist_no
+    FROM   artists
+    WHERE  name = 'The Beatles'
 );
 ```
 
-No direct `DEPARTMENT–PROJECT` relationship is stored, since it can be derived through `EMPLOYEE`.
-
 ---
 
-### Derivation Query Example
+#### Modified for **The Beach Boys**
 
-To find which departments manage which projects:
+sql
 
-```sql
-SELECT DISTINCT E.DEPTNO, W.PROJNO
-FROM EMPLOYEE E
-JOIN WORKS_ON W ON E.EMPNO = W.EMPNO;
 ```
-
-This query derives the implicit relationship without duplicating data.
-
----
-
-## Incorrect Design — Redundant Relationship
-
-If we add a direct link between `DEPARTMENT` and `PROJECT`:
-
-```sql
-CREATE TABLE DEPT_PROJECT (
-  DEPTNO CHAR(3) REFERENCES DEPARTMENT(DEPTNO),
-  PROJNO CHAR(4) REFERENCES PROJECT(PROJNO),
-  PRIMARY KEY (DEPTNO, PROJNO)
+SELECT title
+FROM   records
+WHERE  artist_no = (
+    SELECT artist_no
+    FROM   artists
+    WHERE  name = 'The Beach Boys'
 );
 ```
 
-This relationship can already be deduced via `EMPLOYEE`.  
-Its presence creates **redundancy** and risks **inconsistency** — if data changes in `WORKS_ON`, `DEPT_PROJECT` may no longer match.
+---
+
+### b. Which record titles have the word **'love'** in it?
+
+sql
+
+```
+SELECT title
+FROM   records
+WHERE  title LIKE '%love%';
+```
+
+> **Note:**
+> 
+> - % = wildcard (any characters)
+> - Case-insensitive in most systems
+> - Returns: _A World Without Love_, _Love Me Do_, etc.
 
 ---
 
-### Example of Inconsistency
+### c. What is the **record number** of the song **'She Loves You'**?
 
-| EMPLOYEE |        |        |
-|-----------|--------|--------|
-| EMPNO | NAME | DEPTNO |
-|--------|------|--------|
-| 1001 | Adams | D1 |
-| 1002 | Brown | D1 |
+sql
 
-| WORKS_ON |        |        |
-|-----------|--------|--------|
-| EMPNO | PROJNO |
-|--------|--------|
-| 1001 | P1 |
-| 1002 | P2 |
+```
+SELECT record_no
+FROM   records
+WHERE  title = 'She Loves You';
+```
 
-| DEPT_PROJECT |        |        |
-|---------------|--------|--------|
-| DEPTNO | PROJNO |
-|--------|--------|
-| D1 | P1 |
-
-Here, Project P2 belongs to Department D1 via `WORKS_ON`, but `DEPT_PROJECT` fails to record it — resulting in inconsistency.
+> **Result:** (Assume 53)
 
 ---
 
-## Logical vs. Physical Redundancy
+### d. What **positions** did **'She Loves You'** occupy?
 
-| Type | Description | Example |
-|------|--------------|----------|
-| **Logical redundancy** | Relationship can be inferred via joins | DEPARTMENT–PROJECT via EMPLOYEE |
-| **Physical redundancy** | Duplicate data stored in multiple tables | Repeated department name in employee records |
+sql
 
-Principle 10 eliminates **logical redundancy**, complementing earlier principles that remove **physical redundancy**.
-
----
-
-## Relationship Dependency Rules
-
-To determine redundancy:
-1. Identify all relationships among entities.
-2. Check whether one relationship can be inferred via others.
-3. Remove any that can be derived through joins or transitive dependencies.
+```
+SELECT position
+FROM   charts
+WHERE  record_no = (
+    SELECT record_no
+    FROM   records
+    WHERE  title = 'She Loves You'
+)
+ORDER BY week;
+```
 
 ---
 
-## Practical Example — Students, Courses, Instructors
+### e. Change to include **week numbers** as well
 
-### Scenario
+sql
 
-> Each course is taught by one instructor.  
-> Each student enrolls in many courses.  
-> Which instructor teaches which student?
+```
+SELECT week, position
+FROM   charts
+WHERE  record_no = (
+    SELECT record_no
+    FROM   records
+    WHERE  title = 'She Loves You'
+)
+ORDER BY week;
+```
 
-Derived relationship: `STUDENT` → `COURSE` → `INSTRUCTOR`.
+**Sample Output:**
 
-### Correct Schema
+|WEEK|POSITION|
+|---|---|
+|35|1|
+|36|1|
+|37|2|
+|...|...|
 
-```sql
-CREATE TABLE STUDENT (
-  STU_ID CHAR(5) PRIMARY KEY,
-  NAME VARCHAR(50)
-);
+---
 
-CREATE TABLE COURSE (
-  COURSE_ID CHAR(5) PRIMARY KEY,
-  TITLE VARCHAR(50),
-  INSTRUCTOR_ID CHAR(5)
-);
+### f. Which **artist(s)** perform **'She Loves You'**?
 
-CREATE TABLE ENROLLMENT (
-  STU_ID CHAR(5) REFERENCES STUDENT(STU_ID),
-  COURSE_ID CHAR(5) REFERENCES COURSE(COURSE_ID),
-  PRIMARY KEY (STU_ID, COURSE_ID)
+> _(Let the computer find it!)_
+
+sql
+
+```
+SELECT name
+FROM   artists
+WHERE  artist_no = (
+    SELECT artist_no
+    FROM   records
+    WHERE  title = 'She Loves You'
 );
 ```
 
-We avoid a direct `STUDENT–INSTRUCTOR` table — it is derivable via `ENROLLMENT` and `COURSE`.
+**Result:**
 
----
+text
 
-### Derived Query
-
-```sql
-SELECT S.STU_ID, S.NAME, I.INSTRUCTOR_ID
-FROM STUDENT S
-JOIN ENROLLMENT E ON S.STU_ID = E.STU_ID
-JOIN COURSE I ON E.COURSE_ID = I.COURSE_ID;
+```
+NAME
+The Beatles
 ```
 
-This query produces the implicit `STUDENT–INSTRUCTOR` relationship.
+---
+
+## Final Summary — All Commands
+
+sql
+
+```
+-- a. Beatles hits (single command)
+SELECT title
+FROM   records
+WHERE  artist_no = (SELECT artist_no FROM artists WHERE name = 'The Beatles');
+
+-- a. Beach Boys hits
+SELECT title
+FROM   records
+WHERE  artist_no = (SELECT artist_no FROM artists WHERE name = 'The Beach Boys');
+
+-- b. Titles with 'love'
+SELECT title
+FROM   records
+WHERE  title LIKE '%love%';
+
+-- c. Record number of 'She Loves You'
+SELECT record_no
+FROM   records
+WHERE  title = 'She Loves You';
+
+-- d. Positions of 'She Loves You'
+SELECT position
+FROM   charts
+WHERE  record_no = (SELECT record_no FROM records WHERE title = 'She Loves You')
+ORDER BY week;
+
+-- e. Weeks + positions
+SELECT week, position
+FROM   charts
+WHERE  record_no = (SELECT record_no FROM records WHERE title = 'She Loves You')
+ORDER BY week;
+
+-- f. Artist of 'She Loves You'
+SELECT name
+FROM   artists
+WHERE  artist_no = (SELECT artist_no FROM records WHERE title = 'She Loves You');
+```
 
 ---
 
-## Principle Interaction
-
-| Principle | Focus | Relation to Principle 10 |
-|------------|--------|--------------------------|
-| 4 | One-to-many | Introduces directional relationships |
-| 5 | Many-to-many | Defines link tables |
-| 7 | Direction of relationships | Ensures logical clarity |
-| 10 | Redundant relationships | Removes unnecessary ones |
-
-Principle 10 thus acts as the **final refinement**, ensuring the model is semantically minimal.
-
----
-
-## Exercises
-
-### Exercise 1 — Redundant Relationships
-
-> Given the entities `Supplier`, `Part`, and `Shipment`, determine if a direct `Supplier–Warehouse` table is necessary when shipments already record warehouse data.
-
-### Exercise 2 — Derivation Validation
-
-> Design SQL queries to verify whether a relationship between `Course` and `Department` can be derived via `Instructor`.
-
----
-
-## Summary
-
-- **Principle 10** eliminates redundant or derivable relationships.  
-- Ensures all relationships in the model are **semantically necessary**.  
-- Prevents **inconsistency** and **circular dependencies**.  
-- Completes the normalization framework introduced by earlier principles.
-
-> ✅ **Design Rule:**  
-> Store only relationships that cannot be derived logically from others.
-
----
+> **Pro Tip:** Use **subqueries** to avoid manual steps Use LIKE '%...%' for partial text search Use ORDER BY to sort results logically

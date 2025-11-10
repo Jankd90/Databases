@@ -23,7 +23,7 @@ i2c = I2C(sda=machine.Pin(sda_pin), scl=machine.Pin(scl_pin))
 print('I2C scan result:', [hex(addr) for addr in i2c.scan()])
 
 # Initialisation BME280-sensor
-bme = bme280.BME280(i2c=i2c, address=0x77)
+bme = bme280.BME280(i2c=i2c, address=0x76)
 
 # Function to send data via socket
 def send_data(data):

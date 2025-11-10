@@ -2,190 +2,126 @@
 
 ---
 
-## Introduction
+## INTRODUCTION
 
-Database design generally proceeds from **information requirements**.  
-From these requirements, we determine **characteristics (attributes)**, which lead to **entities** and **tables**.  
+The normal course of affairs is that first the **information requirements** are determined and on the basis of that a list of **characteristics** is produced. Using this list, **entities** can be determined and the **database tables** can be designed.
 
-This chapter introduces **Principle 3½**, a rule that helps identify *many-to-many relationships* that also include their own attributes.
-
----
-
-## Example — Departments and Employees (Revisited)
-
-Assume the following situation:
-
-> Employees can work in more than one department,  
-> but have **voting rights** in only one department.
-
-### Characteristics List
-
-```
-dep_name  
-dep_no  
-budget  
-function  
-salary  
-emp_name  
-emp_no  
-voting_right
+Assume that in the **departments-employees** database it is given that **employees can work in more than one department**, but have a **voting right in only one department**. On the basis of the information requirements, the following list of characteristics can be created:
 ```
 
-Applying **Principles 1–3**, we create two entity tables:
+dep_name dep_no budget function salary emp_name emp_no voting_right
 
-```sql
-CREATE TABLE DEPARTMENT (
-  DEP_NO CHAR(3) PRIMARY KEY,
-  DEP_NAME VARCHAR(40),
-  BUDGET DECIMAL(10,2)
-);
+text
 
-CREATE TABLE EMPLOYEE (
-  EMP_NO CHAR(5) PRIMARY KEY,
-  EMP_NAME VARCHAR(50),
-  FUNCTION VARCHAR(30),
-  SALARY DECIMAL(10,2)
-);
+````
+The database design according to **Principles 1–3** results in the following tables:
+
+```text
+departments(dep_no, dep_name, budget, ...)
+employees(emp_no, emp_name, function, salary, ...)
+````
+
+**Principles 4 and 5** govern how the relationship between these entities must be processed in the design. However, one can also first examine which characteristics **have not yet been included** in any of the present tables.
+
+In this example, it is the characteristic **voting_right**, which says something about a **particular employee in a particular department**.
+
+This formulation makes it clear that this characteristic can **neither be taken up in departments nor in employees**. The consequence is that a **separate table must be designed** for it. The _italics_ make it immediately clear which key this new table must have — namely the **combination of emp_no and dep_no**:
+
+text
+
+```
+voting_rightstable(emp_no, dep_no, voting_right)
 ```
 
----
+> **Side Effect:** This treatment simultaneously processes the **many-to-many relationship** between employees and departments into the design. In this example, the application of **Principles 4 and 5** is **no longer necessary**.
 
-## Identifying Missing Characteristics
+This newly applied principle is **not found** in the book by C.J. Date and will therefore be indicated here as:
 
-The attribute **voting_right** has not yet been placed in either table.  
-It refers to *a specific employee in a specific department* —  
-thus, it belongs to neither entity individually.
-
-We must therefore design a **new table** for this attribute.
+> 🧩 **Principle 3½** For every **characteristic not yet included** in a table, determine the **entities** this characteristic says something about. Then create a **new table** in which the **combination of primary keys** of the named entities appears as the **primary key**.
 
 ---
 
-### Derived Relationship Table
+## How Principle 3½ Works
 
-The **voting_rights** table connects employees and departments:
+With **Principle 3½**, one thus finds **many-to-many relationships** that also have **one or more characteristics of their own**.
 
-```sql
-CREATE TABLE VOTING_RIGHTS (
-  EMP_NO CHAR(5) REFERENCES EMPLOYEE(EMP_NO),
-  DEP_NO CHAR(3) REFERENCES DEPARTMENT(DEP_NO),
-  VOTING_RIGHT CHAR(1),
-  PRIMARY KEY (EMP_NO, DEP_NO)
-);
+> **Note:** **Principle 3½ does _not_ render Principles 4 and 5 useless.** Many-to-many relationships **without** their own characteristics are **not found** with Principle 3½. In the case of **one-to-many relationships** (Principle 4), a characteristic already in use (as a primary key in the "one" table) is **included again** in another table. In the case of **Principle 3½**, however, it concerns **characteristics not yet in use**.
+
+---
+
+## A TABLE IN A TABLE
+
+The **bad designs** from earlier chapters could also be characterized by the remark:
+
+> _"There is a complete table within another table."_
+
+In the poor designs, this is so striking that anyone will recognize it immediately. However, sometimes it is **much more subtle**.
+
+Assume that in the description of the **departments-employees** database the following sentence is added:
+
+> _"The salary of an employee depends on his years of service."_
+
+The consequences become clear using a sample table:
+
+|emp_no|emp_name|function|years_of_service|salary|
+|---|---|---|---|---|
+|001|J. de Boer|porter|6|1800|
+|002|J. de Vries|adm. emp|10|2000|
+|003|J. Deelder|adm. emp|6|1800|
+|004|J. den Dolder|overseer|6|1800|
+
+**Redundancy is present:** The fact that **6 years of service → salary 1800** is stored **multiple times**.
+
+### Correct Solution
+
+text
+
+```
+employees(emp_no, emp_name, function, years_of_service)
+salaries(years_of_service, salary)
 ```
 
-This structure also captures the **many-to-many** relationship between employees and departments,  
-as each employee may work in several departments.
+This reveals that in the original table, there was **a table within a table**.
+
+- salary is a **characteristic of years_of_service**
+- years_of_service is a **characteristic of employee** → salary is a **derived (indirect)** characteristic of the employee
+
+> **Revised Interpretation of Principle 3:** In a table for a particular entity, **only direct characteristics** may be included — **no indirect or derived characteristics**.
 
 ---
 
-## Principle 3½ — Formal Definition
+## NOTATION OF RELATIONS
 
-> 🧩 **Principle 3½**  
-> For every attribute not yet included in any table,  
-> determine which entities it describes.  
-> Create a new table containing:
-> - The combination of the primary keys of those entities as its own **primary key**  
-> - The attribute(s) describing that relationship
+Relations can be notated in the following manner:
 
-This principle ensures that all *relationship-specific* attributes are modeled properly.
-
----
-
-## Relationship to Other Principles
-
-- **Principle 3½** complements, not replaces, Principles 4 and 5.  
-- It automatically identifies **many-to-many relationships** that carry additional attributes.  
-- It applies only when the attribute has not yet been represented elsewhere.  
-
-| Case | Principle Used | Description |
-|------|----------------|--------------|
-| One-to-many relationship | Principle 4 | Add foreign key to “many” table |
-| Many-to-many relationship without attributes | Principle 5 | Create linking table |
-| Many-to-many relationship with attributes | Principle 3½ | Create linking table with extra fields |
-
----
-
-## Example — “Table in a Table” Problem
-
-A poor design often contains an entire table embedded within another table.  
-Sometimes this redundancy is subtle.
-
-### Scenario
-
-> “The salary of an employee depends on years of service.”
-
-### Incorrect Design
-
-| emp_no | emp_name | function | years_of_service | salary |
-|--------|-----------|-----------|------------------|--------|
-| 001 | J. de Boer | Porter | 6 | 1800 |
-| 002 | J. de Vries | Admin Emp | 10 | 2000 |
-| 003 | J. Deelder | Admin Emp | 6 | 1800 |
-| 004 | J. den Dolder | Overseer | 6 | 1800 |
-
-### Issue
-
-The relationship between **years_of_service** and **salary** is duplicated multiple times.
-
-### Correct Normalized Design
-
-```sql
-CREATE TABLE EMPLOYEE (
-  EMP_NO CHAR(5) PRIMARY KEY,
-  EMP_NAME VARCHAR(50),
-  FUNCTION VARCHAR(30),
-  YEARS_OF_SERVICE INT
-);
-
-CREATE TABLE SALARY_SCALE (
-  YEARS_OF_SERVICE INT PRIMARY KEY,
-  SALARY DECIMAL(10,2)
-);
-```
-
-Here, `SALARY` depends directly on `YEARS_OF_SERVICE`, not on the employee.  
-The relationship has been extracted into its own table — avoiding redundancy.
-
----
-
-## Interpretation of Principle 3
-
-> In any table for a particular entity,  
-> include **only direct attributes**, not **derived or indirect** ones.
-
-**Example:**  
-Salary is *derived* from years of service → it belongs in a separate table.
-
----
-
-## Notation of Relationships
-
-Standard diagrammatic notation for relationships:
+text
 
 ```
 ┌───────┐          ┌───────┐           ┌───────┐
 └───┬───┘          └───┬───┘           └───┬───┘
-    │ 1                │ 1                 │ n
-    │ one              │ one               │ many
-    │ to               │ to                │ to
-    │ one              │ many              │ many
-    │ 1                │ n                 │ n
+    │ 1              │ 1                 │ n
+    │  one           │  one              │  many
+    │  to            │  to               │  to
+    │  one           │  many             │  many
+    │ 1              │ n                 │ n
 ┌───┴───┐          ┌───┴───┐           ┌───┴───┐
 └───────┘          └───────┘           └───────┘
 ```
 
-This notation clearly represents **one-to-one**, **one-to-many**, and **many-to-many** relationships.
+- **Left:**1:1 — One-to-One
+- **Middle:**1:n — One-to-Many
+- **Right:**n:n — Many-to-Many
 
 ---
 
 ## Summary
 
-- **Principle 3½** identifies attributes describing relationships between entities.  
-- It generates new tables linking multiple entities through their primary keys.  
-- It aids normalization and prevents redundancy.  
-- Each table must contain only **direct** attributes of its entity type.
+> ✅ **Principle 3½** is a **powerful discovery tool** for:
+> 
+> - **Many-to-many relationships with attributes**
+> - **Hidden tables within tables**
+> - **Indirect characteristics** violating clean entity design
 
-> ✅ **Good Design Rule:**  
-> “Include only direct facts about the key — not facts about facts.”
+It complements — but does **not replace** — Principles 4 and 5.
 
----
+> **Rule of Thumb:** _Every piece of information belongs in **exactly one place** — and only in the table that **directly owns** it._
