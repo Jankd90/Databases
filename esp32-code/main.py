@@ -1,61 +1,52 @@
-#data communication & data processing
-#databases
-#Peter Kamphuis (kapj) Jos Bos (bosj)
-#date: 18 June 2024
-
 import machine
 import time
 from machine import Pin, I2C
 import socket
 import bme280
 
-# GPIO pins I2C
+# Pins
 sda_pin = 19
 scl_pin = 18
 
-# IP-adres and port number of server
-server_ip = "192.168.2.9"
+# Server
+server_ip = "192.168.43.95"
 server_port = 5000
 
+# I2C
+i2c = I2C(sda=Pin(sda_pin), scl=Pin(scl_pin))
+print("I2C scan:", [hex(a) for a in i2c.scan()])
 
-# Initialisation I2C
-i2c = I2C(sda=machine.Pin(sda_pin), scl=machine.Pin(scl_pin))
-print('I2C scan result:', [hex(addr) for addr in i2c.scan()])
-
-# Initialisation BME280-sensor
+# Sensor
 bme = bme280.BME280(i2c=i2c, address=0x76)
 
-# Function to send data via socket
+
 def send_data(data):
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket()
         sock.connect((server_ip, server_port))
-        sock.sendall(data)
+        sock.sendall(data.encode())
         sock.close()
-        print("Data send successfully")
+        print("Data sent")
     except Exception as e:
-        print("Error send data:", e)
+        print("Send error:", e)
 
-# main program
+
 def main():
-    try:
-        # loop read data from sensor and send data
-        while True:
-            bme.values()
-            temperature = bme.temperature()
-            humidity = bme.humidity()
-            pressure = bme.pressure()
+    while True:
+        try:
+            t = bme.temperature[:-1]       # remove "C"
+            h = bme.humidity[:-1]         # remove "%"
+            p = bme.pressure[:-3]         # remove "hPa"
 
-            data = "Temperatuur: {:.2f} °C, Vochtigheid: {:.2f} %, Druk: {:.2f} hPa".format(temperature, humidity, pressure)
+            data = f"Temperature: {t}, Humidity: {h}, Pressure: {p}"
             print(data)
-            send_data(data)
 
-            # Wait 1 second to read sensor again
+            send_data(data)
             time.sleep(1)
 
-    except Exception as e:
-        print("Error to read BME-280 sensor:", e)
+        except Exception as e:
+            print("Sensor read error:", e)
 
-# Start main program
+
 main()
 
