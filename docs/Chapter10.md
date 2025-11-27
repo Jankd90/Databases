@@ -1,4 +1,4 @@
-# Getting Familiar — SQL Practice
+# Chapter 10 Getting Familiar — SQL
 
 ---
 
