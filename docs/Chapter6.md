@@ -200,11 +200,6 @@ r. Now you know the answer, try to do the **complete design** again such as was 
 
 ---
 
-## Question 6
-
-_This question appears to be missing in the provided content. Proceed to Question 7._
-
----
 
 ## Question 7
 
