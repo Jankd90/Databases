@@ -19,27 +19,17 @@
 
 ### a. What hits did **The Beatles** have?
 
-```{toggle}
-:label: Show details
-
-blabla
-```
-
-```{toggle}
-:label: Outer
-
-Outer content.
-
-```{}
-:label: Inner
-Inner content.
-
 #### Step 1 — Find `artist_no`
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT artist_no
 FROM   artists
 WHERE  name = 'The Beatles';
+```
+
 ````
 
 > **Result:** (Assume 15)
@@ -59,16 +49,12 @@ WHERE  artist_no = 15;
 
 ````
 
-
-```sql
-SELECT title
-FROM   records
-WHERE  artist_no = 15;
-```
-
 ---
 
-#### One Single Command (Nested)
+#### Step 3 Create — One Single Command (Nested)
+
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT title
@@ -80,9 +66,14 @@ WHERE  artist_no = (
 );
 ```
 
+````
+
 ---
 
-#### Modified for **The Beach Boys**
+#### Step 4 — Modify the query for **The Beach Boys**
+
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT title
@@ -94,15 +85,22 @@ WHERE  artist_no = (
 );
 ```
 
+````
+
 ---
 
 ### b. Which record titles have the word **'love'** in it?
+
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT title
 FROM   records
 WHERE  title LIKE '%love%';
 ```
+
+````
 
 > **Note:**
 > 
@@ -112,7 +110,11 @@ WHERE  title LIKE '%love%';
 
 ---
 
+
 ### c. What is the **record number** of the song **'She Loves You'**?
+
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT record_no
@@ -120,11 +122,18 @@ FROM   records
 WHERE  title = 'She Loves You';
 ```
 
+````
+
+
+
 > **Result:** (Assume 53)
 
 ---
 
 ### d. What **positions** did **'She Loves You'** occupy?
+
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT position
@@ -137,9 +146,14 @@ WHERE  record_no = (
 ORDER BY week;
 ```
 
+````
+
 ---
 
 ### e. Change to include **week numbers** as well
+
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT week, position
@@ -151,6 +165,9 @@ WHERE  record_no = (
 )
 ORDER BY week;
 ```
+
+````
+
 
 **Sample Output:**
 
@@ -165,8 +182,8 @@ ORDER BY week;
 
 ### f. Which **artist(s)** perform **'She Loves You'**?
 
-> _(Let the computer find it!)_
-
+````{toggle}
+:label: Show SQL
 
 ```sql
 SELECT name
@@ -177,6 +194,8 @@ WHERE  artist_no = (
     WHERE  title = 'She Loves You'
 );
 ```
+
+````
 
 **Result:**
 
