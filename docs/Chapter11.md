@@ -148,27 +148,40 @@ charts.record_no   = records.record_no
 
 ## Questions 2
 
-### a. Records in **week 20**
+### a. Create a list of record numbers of records that were in the charts in  **week 20**
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT record_no
 FROM   charts
 WHERE  week = 20;
 ```
+````
 
 ---
 
-### b. Include **positions**
+### b. Include **positions** in this list
+
+````{toggle}
+:label: Show details
+
 
 ```sql
 SELECT record_no, position
 FROM   charts
 WHERE  week = 20;
 ```
+````
 
 ---
 
+
 ### c. **Order by position**
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT record_no, position
@@ -176,12 +189,17 @@ FROM   charts
 WHERE  week = 20
 ORDER BY position;
 ```
+````
 
 > This is the **Top 10 for week 20**
 
 ---
 
 ### d. Include **titles**
+
+````{toggle}
+:label: Show details
+
 
 ```sql
 SELECT records.record_no, position, title
@@ -190,11 +208,14 @@ WHERE  charts.record_no = records.record_no
   AND  week = 20
 ORDER BY position;
 ```
+````
 
 ---
 
 ### e. Include **artist names** and **record company**
 
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT 
@@ -208,23 +229,30 @@ WHERE
   AND week = 20
 ORDER BY position;
 ```
+````
 
 > **Full hitparade!**
 
 ---
 
-### f. **Debut week** per record
+### f. Make a list of record numbers, together with their first week in the charts
 
-
+````{toggle}
+:label: Show details
 ```sql
 SELECT record_no, MIN(week) AS debut_week
 FROM   charts
 GROUP BY record_no;
 ```
+````
 
 ---
 
-### g. **No.1 hits** of The Beatles (artist_no = 15)
+### g. get the **No.1 hits** of The Beatles (artist_no = 15)
+
+
+````{toggle}
+:label: Show details
 
 ```sql
 -- Step 1: Beatles records
@@ -239,26 +267,35 @@ WHERE  records.record_no = charts.record_no
   AND  artist_no = 15
   AND  position = 1;
 ```
+````
 
 ---
 
-### h. Record companies that released **Beatles** records
+### h. Get the Record companies that released **Beatles** records
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT DISTINCT rec_co
 FROM   records
 WHERE  artist_no = 15;
 ```
+````
 
 ---
 
-### i. Include **song titles**
+### i. Include **song titles** in the list
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT title, rec_co
 FROM   records
 WHERE  artist_no = 15;
 ```
+````
 
 ---
 
