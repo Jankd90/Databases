@@ -48,15 +48,17 @@ WHERE  name = 'The Beatles';
 
 #### Step 2 — Find song titles
 
-```{toggle}
+````{toggle}
 :label: Show SQL
 
-    ```sql
-    SELECT title
-    FROM   records
-    WHERE  artist_no = 15;
-    ```
+```sql
+SELECT title
+FROM   records
+WHERE  artist_no = 15;
 ```
+
+````
+
 
 ```sql
 SELECT title
