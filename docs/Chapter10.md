@@ -19,6 +19,18 @@
 
 ### a. What hits did **The Beatles** have?
 
+```{toggle}
+:label: Show details
+
+This is the content revealed when the toggle is opened.
+You can include text, lists, code blocks, or images.
+
+- Item A
+- Item B
+
+```
+
+
 #### Step 1 — Find `artist_no`
 
 ```sql
@@ -30,6 +42,7 @@ WHERE  name = 'The Beatles';
 > **Result:** (Assume 15)
 
 ---
+</details>
 
 #### Step 2 — Find song titles
 
