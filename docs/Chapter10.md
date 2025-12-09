@@ -104,7 +104,7 @@ WHERE  title LIKE '%love%';
 
 > **Note:**
 > 
-> - % = wildcard (any characters)
+> - \% = wildcard (any characters)
 > - Case-insensitive in most systems
 > - Returns: _A World Without Love_, _Love Me Do_, etc.
 
