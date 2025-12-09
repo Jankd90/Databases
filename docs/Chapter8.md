@@ -4,18 +4,18 @@
 
 ## AMERICAN TOP 10 — January 6, 1965
 
-| TW | LW | TITLE                        | ARTISTS                     | RECORD COMPANY |
-|----|----|------------------------------|-----------------------------|----------------|
-| 1  | 1  | I Feel Fine                  | The Beatles                 | Capitol        |
-| 2  | 2  | Come See About Me            | The Supremes                | Motown         |
-| 3  | 3  | Mr. Lonely                   | Bobby Vinton                | Epic           |
-| 4  | 4  | She's a Woman                | The Beatles                 | Capitol        |
-| 5  | -  | Love Potion Number Nine      | The Searchers               | Kapp           |
-| 6  | 6  | Goin' Out of My Head         | Little Anthony and the Imperials | DCP       |
-| 7  | 5  | She's Not There              | The Zombies                 | Parrot         |
-| 8  | -  | Amen                         | The Impressions             | ABC            |
-| 9  | 9  | The Jerk                     | The Larks                   | Money          |
-| 10 | -  | The Wedding                  | Julie Rogers                | Mercury        |
+| TW  | LW  | TITLE                   | ARTISTS                          | RECORD COMPANY |
+| --- | --- | ----------------------- | -------------------------------- | -------------- |
+| 1   | 1   | I Feel Fine             | The Beatles                      | Capitol        |
+| 2   | 2   | Come See About Me       | The Supremes                     | Motown         |
+| 3   | 3   | Mr. Lonely              | Bobby Vinton                     | Epic           |
+| 4   | 4   | She's a Woman           | The Beatles                      | Capitol        |
+| 5   | -   | Love Potion Number Nine | The Searchers                    | Kapp           |
+| 6   | 6   | Goin' Out of My Head    | Little Anthony and the Imperials | DCP            |
+| 7   | 5   | She's Not There         | The Zombies                      | Parrot         |
+| 8   | -   | Amen                    | The Impressions                  | ABC            |
+| 9   | 9   | The Jerk                | The Larks                        | Money          |
+| 10  | -   | The Wedding             | Julie Rogers                     | Mercury        |
 
 > **TW:** This week's position  
 > **LW:** Last week's position
@@ -30,9 +30,7 @@ Our workshops will deal with a **database** that contains **all data** on **ever
 
 DATABASE └── consists of DATAFILES └── consist of RECORDS └── consist of FIELDS
 
-text
-
-````
+```
 The **datafiles** usually have some **relationship** with each other — that is the reason why they are part of the **same database**.
 
 ---
@@ -106,7 +104,6 @@ In our example: Each **song**, **artist**, and **record company** will be assign
 
 ### Initial Tables
 
-
 ```
 RECORDS     (record_no, title, ...)
 ARTISTS     (artist_no, name, country, ...)
@@ -123,8 +120,6 @@ REC_COMP    (rec_co, name, ...)
 → **One-to-many** relationship
 
 **Solution:** Include the **artist’s primary key** in the RECORDS table:
-
-text
 
 ```
 RECORDS (record_no, title, artist_no, ...)
@@ -143,8 +138,6 @@ RECORDS (record_no, title, artist_no, ...)
 
 **Solution:** Include rec_co in RECORDS:
 
-text
-
 ```
 RECORDS (record_no, title, artist_no, rec_co)
 ```
@@ -154,8 +147,6 @@ RECORDS (record_no, title, artist_no, rec_co)
 ## Chart Positions
 
 To store **weekly positions**:
-
-text
 
 ```
 CHARTS (week, record_no, position)
@@ -167,7 +158,6 @@ CHARTS (week, record_no, position)
 
 ## Final Database Structure
 
-text
 
 ```
 TOP10USA
@@ -200,9 +190,7 @@ Even though **The Beatles** have **two songs** in the chart → their info is st
 
 **Example:** Current week = **34** Want last week’s position of a record?
 
-sql
-
-```
+```sql
 SELECT position
 FROM CHARTS
 WHERE week = 33

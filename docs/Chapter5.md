@@ -41,9 +41,8 @@ The **DBMS must enforce** this rule:
 |Update primary key|Foreign keys become **invalid**|**Update all related foreign keys**|
 |Insert invalid foreign key|Refers to **non-existent record**|**Reject insert**|
 
-sql
 
-```
+```sql
 ALTER TABLE EMPLOYEE
   ADD FOREIGN KEY (DEPTNO)
   REFERENCES DEPARTMENT(DEPTNO)
@@ -66,9 +65,8 @@ ALTER TABLE EMPLOYEE
 
 > In **Paradox for Windows**, defining a **field type** is itself a **format constraint**. A Date field accepts **only valid dates** → prevents _blunt mistakes_.
 
-sql
 
-```
+```sql
 CREATE TABLE PERSON (
   ID CHAR(8) PRIMARY KEY,
   BIRTHDATE DATE CHECK (BIRTHDATE >= '1900-01-01')

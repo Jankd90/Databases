@@ -30,11 +30,11 @@ The **purchasing of cleaning materials** is controlled centrally from the head o
 
 Assume that the Superclean company in **Groningen** shall have the use of the following table of premises:
 
-|building no.|address|m2|customer no.|name|address|
-|---|---|---|---|---|---|
-|1054|Landleven 10|1000|1052|Hanzehogeschool|Landleven 10 9747 AD Groningen|
-|2034|Penningsdijk 6|2000|1052|Hanzehogeschool|Landleven 10 9747 AD Groningen|
-|1236|Hoendiepskade 23|1700|1052|Hanzehogeschool|Landleven 10 9747 AD Groningen|
+| building no. | address          | m2   | customer no. | name            | address                        |
+| ------------ | ---------------- | ---- | ------------ | --------------- | ------------------------------ |
+| 1054         | Landleven 10     | 1000 | 1052         | Hanzehogeschool | Landleven 10 9747 AD Groningen |
+| 2034         | Penningsdijk 6   | 2000 | 1052         | Hanzehogeschool | Landleven 10 9747 AD Groningen |
+| 1236         | Hoendiepskade 23 | 1700 | 1052         | Hanzehogeschool | Landleven 10 9747 AD Groningen |
 
 What **objections** are to be raised against this database design?
 
@@ -67,8 +67,6 @@ Assume that the **salaries administration** of the Groningen branch will have th
 |090|V.V. de Smet|031|cleaner|1482|10|390|
 
 a. What **objections** are to be raised against this database design? b. An **improved design** is:
-
-text
 
 ```
 employees(emp_no, name, functioncode, no_of_hours)
@@ -109,8 +107,6 @@ Now follows the simplified rendering.
 
 A dentist maintains a **patient administration system**, in which for each patient the necessary data is established. If a patient is insured with a **health insurance fund**, then the bill for a treatment is sent to the relevant health insurance fund. If a patient is insured privately, then the bill is sent to the patient himself. The dentist himself designs the following database table:
 
-text
-
 ```
 patients(patno, name, address, hifcode, hifname, hifaddress)
 ```
@@ -124,8 +120,6 @@ In it there are:
 
 b. Fill in **five records** of this table with values. c. On the basis of this filling in give **three objections** to this design. d. Make it clear that such objections are not to be brought against the following design:
 
-text
-
 ```
 patients(patno, name, address, hifcode)
 health_insurance_funds(hifcode, hifname, hifaddress)
@@ -137,15 +131,11 @@ e. Take the values which you have used for part b (except P and I) and fill in w
 
 Naturally the dentist also puts **monetary amounts** on the bills which he sends. At the same time he mentions in them the **date** on which the patient was under treatment. These matters must also be incorporated in the database design. The dentist therefore expands his table of patients as follows:
 
-text
-
 ```
 patients(patno, name, address, hifcode, date1, amount1, date2, amount2, ..., date10, amount10)
 ```
 
 i. Give **three objections** to this approach. j. Formulate an **awkward question** for this table. k. Explain that such objections are not to be brought against the following design:
-
-text
 
 ```
 patients(patno, name, address, hifcode)
@@ -158,15 +148,11 @@ Patients and health insurance funds will also be keen to have a **description of
 
 o. Give an **objection** against a table such as:
 
-text
-
 ```
 treatments_per_patient(patno, date, description, tariff)
 ```
 
 The complete design for the dentist after these considerations gets the following appearance:
-
-text
 
 ```
 patients(patno, name, address, hifcode)
@@ -177,8 +163,6 @@ treatments_per_patient(.....)
 
 The table treatments_per_patient must now be filled in. The table treatments_per_patient is the right table for this. Someone proposes the following, but forgets to indicate the primary key:
 
-text
-
 ```
 treatments_per_patient(patno, date, upt_code, number)
 ```
@@ -186,8 +170,6 @@ treatments_per_patient(patno, date, upt_code, number)
 q. Which fields must form the **primary key**?
 
 The design is now complete and appears as follows:
-
-text
 
 ```
 patients(patno, name, address, hifcode)
@@ -206,8 +188,6 @@ r. Now you know the answer, try to do the **complete design** again such as was 
 At the **SCG sports club** one can pursue various **sports**. Members must state which sports they wish to participate in. For each **member**, apart from a **membership number** and **personal data**, details of the **branches of sport** pursued are recorded. For each sport a certain **contribution** is laid down. It is also recorded whether members have **paid their contributions**. Possibly they have done this for one branch of sport and maybe not for another branch of sport.
 
 a. Design the **tables** for the database of SCG. In doing so make use of the following list of field names. In this list not necessarily all field names of all **primary keys** appear. For the rest this list is complete.
-
-text
 
 ```
 sport_no, type of sport, contribution (=branch of sport)
@@ -238,8 +218,6 @@ An **engineering office** carries out **projects** for clients. Such projects ne
 
 a. Design for this office the **required database tables**. Use the following field names:
 
-text
-
 ```
 basic_price
 client_name
@@ -268,8 +246,6 @@ In this question one is asked to design a database for the **Superclean company*
 - Each **customer** belongs to only one **district** and falls under the responsibility of the **inspector** for that district. In a district there are several customers.
 
 Design the **database tables** for Superclean. Use the following list of field names. This list is complete:
-
-text
 
 ```
 building_address

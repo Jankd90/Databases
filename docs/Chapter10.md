@@ -33,9 +33,8 @@ WHERE  name = 'The Beatles';
 
 #### Step 2 — Find song titles
 
-sql
 
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no = 15;
@@ -45,9 +44,7 @@ WHERE  artist_no = 15;
 
 #### One Single Command (Nested)
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no = (
@@ -61,9 +58,7 @@ WHERE  artist_no = (
 
 #### Modified for **The Beach Boys**
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no = (
@@ -77,9 +72,7 @@ WHERE  artist_no = (
 
 ### b. Which record titles have the word **'love'** in it?
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  title LIKE '%love%';
@@ -95,9 +88,7 @@ WHERE  title LIKE '%love%';
 
 ### c. What is the **record number** of the song **'She Loves You'**?
 
-sql
-
-```
+```sql
 SELECT record_no
 FROM   records
 WHERE  title = 'She Loves You';
@@ -109,9 +100,7 @@ WHERE  title = 'She Loves You';
 
 ### d. What **positions** did **'She Loves You'** occupy?
 
-sql
-
-```
+```sql
 SELECT position
 FROM   charts
 WHERE  record_no = (
@@ -126,9 +115,7 @@ ORDER BY week;
 
 ### e. Change to include **week numbers** as well
 
-sql
-
-```
+```sql
 SELECT week, position
 FROM   charts
 WHERE  record_no = (
@@ -154,9 +141,8 @@ ORDER BY week;
 
 > _(Let the computer find it!)_
 
-sql
 
-```
+```sql
 SELECT name
 FROM   artists
 WHERE  artist_no = (
@@ -168,8 +154,6 @@ WHERE  artist_no = (
 
 **Result:**
 
-text
-
 ```
 NAME
 The Beatles
@@ -179,9 +163,7 @@ The Beatles
 
 ## Final Summary — All Commands
 
-sql
-
-```
+```sql
 -- a. Beatles hits (single command)
 SELECT title
 FROM   records

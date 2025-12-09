@@ -39,9 +39,8 @@ WHERE  record_no = 50;
 
 ### Example 2 — Number of Hits
 
-sql
 
-```
+```sql
 SELECT COUNT(record_no)
 FROM   records
 WHERE  artist_no = 15;
@@ -57,9 +56,7 @@ You want the **group** (e.g., country) **and** the **summary**.
 
 ### Example — Artists per Country
 
-sql
-
-```
+```sql
 SELECT country, COUNT(artist_no)
 FROM   artists
 GROUP BY country;
@@ -74,9 +71,7 @@ GROUP BY country;
 
 ### Example — Records per Record Company
 
-sql
-
-```
+```sql
 SELECT rec_co, COUNT(record_no)
 FROM   records
 GROUP BY rec_co;
@@ -88,9 +83,8 @@ GROUP BY rec_co;
 
 Sorts the **final result** Placed at the **end** of the command
 
-sql
 
-```
+```sql
 SELECT week, position
 FROM   charts
 WHERE  record_no = 50
@@ -99,9 +93,7 @@ ORDER BY position;
 
 > **Note:** Tables in relational databases are **not sorted** ORDER BY does **not require** the field to be in SELECT
 
-sql
-
-```
+```sql
 -- Valid: sort by week, show only position
 SELECT position
 FROM   charts
@@ -119,9 +111,7 @@ Files are related → **link** them using **matching fields**
 
 ### Syntax
 
-sql
-
-```
+```sql
 SELECT ...
 FROM   table1, table2
 WHERE  table1.field = table2.field;
@@ -131,9 +121,7 @@ WHERE  table1.field = table2.field;
 
 ### Example — Titles + Artist Names (Capitol Records)
 
-sql
-
-```
+```sql
 SELECT title, name
 FROM   records, artists
 WHERE  records.artist_no = artists.artist_no
@@ -150,9 +138,7 @@ WHERE  records.artist_no = artists.artist_no
 
 ## LINKS IN TOP10USA
 
-text
-
-```
+```text
 artists.artist_no  = records.artist_no
 records.rec_co     = rec_comp.rec_co
 charts.record_no   = records.record_no
@@ -164,9 +150,7 @@ charts.record_no   = records.record_no
 
 ### a. Records in **week 20**
 
-sql
-
-```
+```sql
 SELECT record_no
 FROM   charts
 WHERE  week = 20;
@@ -176,9 +160,7 @@ WHERE  week = 20;
 
 ### b. Include **positions**
 
-sql
-
-```
+```sql
 SELECT record_no, position
 FROM   charts
 WHERE  week = 20;
@@ -188,9 +170,7 @@ WHERE  week = 20;
 
 ### c. **Order by position**
 
-sql
-
-```
+```sql
 SELECT record_no, position
 FROM   charts
 WHERE  week = 20
@@ -203,9 +183,7 @@ ORDER BY position;
 
 ### d. Include **titles**
 
-sql
-
-```
+```sql
 SELECT records.record_no, position, title
 FROM   charts, records
 WHERE  charts.record_no = records.record_no
@@ -217,9 +195,8 @@ ORDER BY position;
 
 ### e. Include **artist names** and **record company**
 
-sql
 
-```
+```sql
 SELECT 
   position, title, name, rec_comp.name AS company
 FROM   
@@ -238,9 +215,8 @@ ORDER BY position;
 
 ### f. **Debut week** per record
 
-sql
 
-```
+```sql
 SELECT record_no, MIN(week) AS debut_week
 FROM   charts
 GROUP BY record_no;
@@ -250,9 +226,7 @@ GROUP BY record_no;
 
 ### g. **No.1 hits** of The Beatles (artist_no = 15)
 
-sql
-
-```
+```sql
 -- Step 1: Beatles records
 SELECT record_no
 FROM   records
@@ -270,9 +244,7 @@ WHERE  records.record_no = charts.record_no
 
 ### h. Record companies that released **Beatles** records
 
-sql
-
-```
+```sql
 SELECT DISTINCT rec_co
 FROM   records
 WHERE  artist_no = 15;
@@ -282,9 +254,7 @@ WHERE  artist_no = 15;
 
 ### i. Include **song titles**
 
-sql
-
-```
+```sql
 SELECT title, rec_co
 FROM   records
 WHERE  artist_no = 15;
@@ -296,9 +266,7 @@ WHERE  artist_no = 15;
 
 End a query with **Save As…** → creates a **new table**
 
-sql
-
-```
+```sql
 SELECT artists.name, records.title
 FROM   artists, records
 WHERE  artists.artist_no = records.artist_no;
@@ -322,9 +290,7 @@ WHERE  artists.artist_no = records.artist_no;
 
 #### Step 1 — Count per company
 
-sql
-
-```
+```sql
 SELECT rec_co, COUNT(record_no) AS amount
 FROM   records
 GROUP BY rec_co;
@@ -334,9 +300,7 @@ GROUP BY rec_co;
 
 #### Step 2 — Find max
 
-sql
-
-```
+```sql
 SELECT rec_co, amount
 FROM   mosthits
 WHERE  amount = (SELECT MAX(amount) FROM mosthits);
@@ -348,9 +312,7 @@ WHERE  amount = (SELECT MAX(amount) FROM mosthits);
 
 ### a. Try the example
 
-sql
-
-```
+```sql
 -- Step 1
 SELECT rec_co, COUNT(record_no) AS amount
 FROM   records
@@ -367,9 +329,7 @@ WHERE  amount = (SELECT MAX(amount) FROM mosthits);
 
 ### b. Include **record company name**
 
-sql
-
-```
+```sql
 SELECT rec_comp.name, amount
 FROM   mosthits, rec_comp
 WHERE  mosthits.rec_co = rec_comp.rec_co
@@ -382,9 +342,7 @@ WHERE  mosthits.rec_co = rec_comp.rec_co
 
 > **Hint:** Same pattern as record companies
 
-sql
-
-```
+```sql
 -- Step 1: Count records per artist
 SELECT artist_no, COUNT(record_no) AS hits
 FROM   records
@@ -409,9 +367,7 @@ WHERE  artist_hits.artist_no = artists.artist_no
 
 ### a. List with **debut week**
 
-sql
-
-```
+```sql
 SELECT record_no, MIN(week) AS debwk_no
 FROM   charts
 GROUP BY record_no;
@@ -421,9 +377,7 @@ GROUP BY record_no;
 
 ### b. Exclude **week 1**
 
-sql
-
-```
+```sql
 SELECT record_no, MIN(week) AS debwk_no
 FROM   charts
 WHERE  week > 1
@@ -434,9 +388,7 @@ GROUP BY record_no;
 
 ### c. Save as DEB WEEK
 
-sql
-
-```
+```sql
 -- Save As → 'debweek' (fields: record_no, debwk_no)
 ```
 
@@ -444,9 +396,7 @@ sql
 
 ### d. View file
 
-sql
-
-```
+```sql
 SELECT * FROM debweek;
 ```
 
@@ -459,9 +409,7 @@ SELECT * FROM debweek;
 
 ### e. Add **debut position**
 
-sql
-
-```
+```sql
 SELECT 
   debweek.record_no, position AS debpos
 FROM   
@@ -475,9 +423,8 @@ WHERE
 
 ### f. Save as DEBPOSITION
 
-sql
 
-```
+```sql
 -- Save As → 'debposition' (rec_no, debpos)
 ```
 
@@ -485,9 +432,8 @@ sql
 
 ### g. Find **highest debut** (lowest position number!)
 
-sql
 
-```
+```sql
 SELECT rec_no, debpos
 FROM   debposition
 WHERE  debpos = (SELECT MIN(debpos) FROM debposition);
@@ -497,9 +443,7 @@ WHERE  debpos = (SELECT MIN(debpos) FROM debposition);
 
 ### h. Get **song title**
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  record_no IN (
@@ -519,9 +463,8 @@ WHERE  record_no IN (
 
 ### Step 1 — Points per appearance
 
-sql
 
-```
+```sql
 SELECT record_no, (11 - position) AS points
 FROM   charts;
 -- Save As → 'weekly_points'
@@ -531,9 +474,7 @@ FROM   charts;
 
 ### Step 2 — Total points per record
 
-sql
-
-```
+```sql
 SELECT record_no, SUM(points) AS total_points
 FROM   weekly_points
 GROUP BY record_no;
@@ -544,9 +485,7 @@ GROUP BY record_no;
 
 ### Step 3 — Final hitparade (descending)
 
-sql
-
-```
+```sql
 SELECT 
   title, name, total_points
 FROM   

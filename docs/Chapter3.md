@@ -8,10 +8,7 @@ The normal course of affairs is that first the **information requirements** are 
 
 Assume that in the **departments-employees** database it is given that **employees can work in more than one department**, but have a **voting right in only one department**. On the basis of the information requirements, the following list of characteristics can be created:
 ```
-
 dep_name dep_no budget function salary emp_name emp_no voting_right
-
-text
 
 ````
 The database design according to **Principles 1–3** results in the following tables:
@@ -26,8 +23,6 @@ employees(emp_no, emp_name, function, salary, ...)
 In this example, it is the characteristic **voting_right**, which says something about a **particular employee in a particular department**.
 
 This formulation makes it clear that this characteristic can **neither be taken up in departments nor in employees**. The consequence is that a **separate table must be designed** for it. The _italics_ make it immediately clear which key this new table must have — namely the **combination of emp_no and dep_no**:
-
-text
 
 ```
 voting_rightstable(emp_no, dep_no, voting_right)
@@ -94,16 +89,15 @@ This reveals that in the original table, there was **a table within a table**.
 
 Relations can be notated in the following manner:
 
-text
 
 ```
 ┌───────┐          ┌───────┐           ┌───────┐
 └───┬───┘          └───┬───┘           └───┬───┘
-    │ 1              │ 1                 │ n
-    │  one           │  one              │  many
-    │  to            │  to               │  to
-    │  one           │  many             │  many
-    │ 1              │ n                 │ n
+    │ 1                │ 1                 │ n
+    │  one             │  one              │  many
+    │  to              │  to               │  to
+    │  one             │  many             │  many
+    │ 1                │ n                 │ n
 ┌───┴───┐          ┌───┴───┐           ┌───┴───┐
 └───────┘          └───────┘           └───────┘
 ```

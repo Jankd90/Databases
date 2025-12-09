@@ -56,9 +56,8 @@ WHERE   <condition(s)>;
 
 ### Example 1 — Single Field, Single Row
 
-sql
 
-```
+```sql
 SELECT name
 FROM   artists
 WHERE  artist_no = 41;
@@ -79,8 +78,6 @@ WHERE  artist_no = 41;
 
 **Result:**
 
-text
-
 ```
 NAME
 Peter & Gordon
@@ -90,9 +87,7 @@ Peter & Gordon
 
 ### Example 2 — All Fields (*)
 
-sql
-
-```
+```sql
 SELECT *
 FROM   artists
 WHERE  artist_no = 41;
@@ -108,9 +103,8 @@ WHERE  artist_no = 41;
 
 ### Example 3 — Multiple Rows
 
-sql
 
-```
+```sql
 SELECT name
 FROM   artists
 WHERE  country = 'UK';
@@ -124,9 +118,8 @@ WHERE  country = 'UK';
 
 ### Example 4 — No WHERE Clause
 
-sql
 
-```
+```sql
 SELECT country
 FROM artists;
 ```
@@ -135,9 +128,8 @@ FROM artists;
 
 Try this in the seminar:
 
-sql
 
-```
+```sql
 SELECT DISTINCT country
 FROM artists;
 ```
@@ -152,9 +144,7 @@ We want the **title(s)** of **Peter & Gordon** in 1964.
 
 ### Step 1 — Find artist_no
 
-sql
-
-```
+```sql
 SELECT artist_no
 FROM   artists
 WHERE  name = 'Peter & Gordon';
@@ -178,17 +168,13 @@ WHERE  name = 'Peter & Gordon';
 
 ### Step 2 — Find Titles
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no = 41;
 ```
 
 **Result:**
-
-text
 
 ```
 TITLE
@@ -201,9 +187,7 @@ A World Without Love
 
 Instead of manually copying 41, **nest** the query:
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no = (
@@ -221,9 +205,7 @@ WHERE  artist_no = (
 
 Not sure about spelling?
 
-sql
-
-```
+```sql
 SELECT artist_no
 FROM   artists
 WHERE  name LIKE '*gordon*';
@@ -235,9 +217,7 @@ WHERE  name LIKE '*gordon*';
 
 ## When = Fails → Use IN
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no = (
@@ -251,9 +231,7 @@ WHERE  artist_no = (
 
 **Solution:** Use IN
 
-sql
-
-```
+```sql
 SELECT title
 FROM   records
 WHERE  artist_no IN (
@@ -291,9 +269,7 @@ WHERE  artist_no IN (
 
 **Example:** Current week = **10** Want **last week’s position** of record 27?
 
-sql
-
-```
+```sql
 SELECT position
 FROM   charts
 WHERE  week = 9
