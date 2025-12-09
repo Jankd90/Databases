@@ -299,16 +299,22 @@ WHERE  artist_no = 15;
 
 ---
 
-## CREATING 'FILES' — SAVE AS
+## CREATING 'Tabels' — SAVE AS
 
-End a query with **Save As…** → creates a **new table**
+Creates a **new table** and add existing data to it.
 
 ```sql
+-- Step 1: create table
+CREATE TABLE songs (
+    name  TEXT,
+    title TEXT
+);
+-- Step 2: populate
+INSERT INTO songs (name, title)
 SELECT artists.name, records.title
 FROM   artists, records
 WHERE  artists.artist_no = records.artist_no;
 
--- File → Save As → 'songs'
 ```
 
 > New table: SONGS(name, title)
@@ -328,11 +334,20 @@ WHERE  artists.artist_no = records.artist_no;
 #### Step 1 — Count per company
 
 ```sql
-SELECT rec_co, COUNT(record_no) AS amount
-FROM   records
-GROUP BY rec_co;
-
--- Save As → 'mosthits'
+-- Step 1: create table
+CREATE TABLE mosthits (
+    rec_co TEXT,
+    amount INTEGER
+);
+-- Step 2: populate
+INSERT INTO mosthits (rec_co, amount)
+SELECT 
+    rec_co,
+    COUNT(record_no) AS amount
+FROM 
+    records
+GROUP BY 
+    rec_co;
 ```
 
 #### Step 2 — Find max
@@ -386,7 +401,6 @@ Answer which artist(s) released most records.
 SELECT artist_no, COUNT(record_no) AS hits
 FROM   records
 GROUP BY artist_no;
--- Save As → 'artist_hits'
 
 -- Step 2: Find max
 SELECT artist_no, hits
@@ -404,40 +418,66 @@ WHERE  artist_hits.artist_no = artists.artist_no
 
 ## The Highest Debut Position
 
-### a. List with **debut week**
+### a. Produce a list of record numbers with their debut week numbers
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT record_no, MIN(week) AS debwk_no
 FROM   charts
 GROUP BY record_no;
 ```
+````
 
 ---
 
-### b. Exclude **week 1**
+### b. Exclude from this list the records from week 1
 
+````{toggle}
+:label: Show details
 ```sql
 SELECT record_no, MIN(week) AS debwk_no
 FROM   charts
 WHERE  week > 1
 GROUP BY record_no;
 ```
+````
 
 ---
 
-### c. Save as DEB WEEK
+### c. Save this list to file. Call this file DEBWEEK
 
+````{toggle}
+:label: Show details
 ```sql
--- Save As → 'debweek' (fields: record_no, debwk_no)
+-- Step 1: Create table
+CREATE TABLE debweek (
+    record_no INTEGER PRIMARY KEY,
+    debwk_no  INTEGER
+);
+
+-- Step 2: Populate 
+INSERT INTO debweek (record_no, debwk_no)
+SELECT record_no, MIN(week) AS debwk_no
+FROM   charts
+WHERE  week > 1
+GROUP BY record_no;
+
 ```
+````
 
 ---
 
-### d. View file
+### d. View the file
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT * FROM debweek;
 ```
+````
 
 > **Meaning:**
 > 
@@ -446,7 +486,10 @@ SELECT * FROM debweek;
 
 ---
 
-### e. Add **debut position**
+### e. Make a list including record numbers and the chart position of each record in their debut week (DEBPOSITION)
+
+````{toggle}
+:label: Show details
 
 ```sql
 SELECT 
@@ -457,31 +500,54 @@ WHERE
   debweek.record_no = charts.record_no
   AND  debweek.debwk_no = charts.week;
 ```
+````
 
 ---
 
 ### f. Save as DEBPOSITION
 
-
+````{toggle}
+:label: Show details
 ```sql
--- Save As → 'debposition' (rec_no, debpos)
+-- Step 1: Create table
+CREATE TABLE DEBPOSITION (
+    record_no INTEGER,
+    debpos    INTEGER
+);
+-- Step 2: Populate
+INSERT INTO DEBPOSITION (record_no, debpos)
+SELECT 
+    debweek.record_no,
+    charts.position AS debpos
+FROM 
+    debweek
+JOIN 
+    charts
+      ON debweek.record_no = charts.record_no
+     AND debweek.debwk_no  = charts.week;
+
 ```
+````
 
 ---
 
-### g. Find **highest debut** (lowest position number!)
+### g. Use this file DEBPOSITION to find the record(s) with the highest debut position.
 
-
+````{toggle}
+:label: Show details
 ```sql
 SELECT rec_no, debpos
 FROM   debposition
 WHERE  debpos = (SELECT MIN(debpos) FROM debposition);
 ```
+````
 
 ---
 
-### h. Get **song title**
+### h. Check the appropriate table to find the song title.
 
+````{toggle}
+:label: Show details
 ```sql
 SELECT title
 FROM   records
@@ -491,6 +557,7 @@ WHERE  record_no IN (
     WHERE  debpos = (SELECT MIN(debpos) FROM debposition)
 );
 ```
+````
 
 ---
 
@@ -502,30 +569,50 @@ Produce a hitparade of the 'Song of the Year 1964'
 
 ---
 
-### Step 1 — Points per appearance
+### Step 1 — Create a table for Points per appearance
 
 
+````{toggle}
+:label: Show details
 ```sql
+-- Step 1: create table
+CREATE TABLE weekly_points (
+    record_no INTEGER,
+    points    INTEGER
+);
+-- Step 2: populate
+INSERT INTO weekly_points (record_no, points)
 SELECT record_no, (11 - position) AS points
-FROM   charts;
--- Save As → 'weekly_points'
+FROM   charts;'
 ```
+````
 
 ---
 
-### Step 2 — Total points per record
+### Step 2 — Create a table Total points per record
 
+````{toggle}
+:label: Show details
 ```sql
+-- Step 1: create table
+CREATE TABLE year_totals (
+    record_no    INTEGER,
+    total_points INTEGER
+);
+-- Step 2: populate
+INSERT INTO year_totals (record_no, total_points)
 SELECT record_no, SUM(points) AS total_points
 FROM   weekly_points
 GROUP BY record_no;
--- Save As → 'year_totals'
 ```
+````
 
 ---
 
-### Step 3 — Final hitparade (descending)
+### Step 3 — Create the Final hitparade (in descending order)
 
+````{toggle}
+:label: Show details
 ```sql
 SELECT 
   title, name, total_points
@@ -536,6 +623,7 @@ WHERE
   AND records.artist_no = artists.artist_no
 ORDER BY total_points DESC;
 ```
+````
 
 > **#1 = Song of the Year 1964**
 
