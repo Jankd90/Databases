@@ -340,6 +340,8 @@ WHERE  mosthits.rec_co = rec_comp.rec_co
 
 ## Questions 3 — Most Successful Artists
 
+Answer which artist(s) released most records.
+
 > **Hint:** Same pattern as record companies
 
 ```sql
@@ -456,6 +458,8 @@ WHERE  record_no IN (
 ---
 
 ## Questions 4 — Song of the Year 1964
+
+Produce a hitparade of the 'Song of the Year 1964'
 
 > **Scoring:** Position 10 → 1 point Position 9 → 2 points … Position 1 → 10 points
 
