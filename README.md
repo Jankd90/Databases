@@ -1,115 +1,132 @@
-# Getting Started with ESP32, MicroPython and SQlite Database
+# ESP32 BME280 Climate Station with SQLite
 
-This repository contains code for an ESP32-based data acquisition system using a BME280 sensor and a Python host server with SQLite. The ESP32 reads environmental data (temperature, humidity, pressure) and transmits it to a host computer for database storage.
+This repository contains an ESP32-based climate data project. An ESP32 reads a BME280 sensor, sends temperature, humidity, and pressure values over WiFi, and a Python host receiver stores the readings in SQLite.
 
----
+The database tutorials now build one continuous project around this system:
+
+1. Design the climate database in ChartDB.
+2. Send ESP32/BME280 data into SQLite.
+3. Analyze the climate readings with SQL.
+4. Build a small Python application on top of the same database.
+
+The project can be used as a small weather station or as a smart-home indoor climate monitor.
 
 ## Requirements
 
-* ESP32 microcontroller
-* BME280 sensor (I²C interface)
-* Thonny IDE
-* Python 3.10+ on host computer
-* [DB browser](https://sqlitebrowser.org/)
+- ESP32 microcontroller
+- BME280 sensor with I2C wiring
+- Thonny IDE
+- Python 3.10+ on the host computer
+- DB Browser for SQLite: https://sqlitebrowser.org/
+- Docker Desktop for running ChartDB locally
+- Optional WSL 2 on Windows for a smoother Docker workflow
 
-The Python host uses the following dependencies (see `requirements.txt`):
+SQLite itself is included with Python through the built-in `sqlite3` module. The only optional Python package used by the tutorials is:
 
+```text
+dbml-sqlite
 ```
-sqlite3
+
+## ESP32 Setup
+
+Open the files in `esp32-code/`.
+
+1. Edit `esp32-code/secure.txt` with your WiFi credentials.
+2. Open `esp32-code/main.py`.
+3. Set `server_ip` to your computer's IPv4 address.
+4. Check the BME280 I2C pins:
+
+```python
+sda_pin = 19
+scl_pin = 18
 ```
 
----
+5. In Thonny, copy these files to the ESP32:
 
-## 1. Install Thonny IDE
+- `boot.py`
+- `main.py`
+- `bme280.py`
+- `secure.txt`
 
-1. Download and install **Thonny** from [https://thonny.org](https://thonny.org).
-2. Open Thonny and go to
-   **Tools → Options → Interpreter**
-3. Select:
+When `main.py` runs, it sends messages like:
 
-   * **Interpreter:** “MicroPython (ESP32)”
-   * **Port:** your ESP32 serial port
-4. Click **Install or update MicroPython (firmware)** if not already present.
+```text
+Temperature: 22.4, Humidity: 45.2, Pressure: 1013.6
+```
 
-   * Choose your ESP32 model
-   * Follow on-screen instructions to flash MicroPython firmware
+## Host Receiver
 
----
-
-## 2. Configure ESP32
-
-1. Edit `secure.txt` to include your WiFi credentials (line 1 = SSID, line 2 = password).
-
-2. Add your computer’s IPv4 address (found via ipconfig in the terminal) to the server_ip field in main.py
-
-3. Connect ESP32 via USB.
-
-4. Open Thonny’s **Files** pane and copy the following files to the ESP32:
-
-   * `boot.py`
-   * `main.py`
-   * `bme280.py`
-   * `secure.txt` (contains WiFi SSID and password)
-
-
-
-When powered, `boot.py` automatically connects to WiFi using these credentials.
-
----
-
-## 3. Configure Thonny for ESP32
-
-* In Thonny’s **Shell**, you should see:
-
-  ```
-  Connect to WiFi: ('192.168.x.x', '255.255.255.0', '192.168.x.x', '8.8.8.8')
-  ```
-
-  This confirms network connection.
-* Run `main.py` — it will start reading sensor data and transmitting it via TCP to the host.
-
----
-
-## 4. Host Python Server (Data Storage)
-
-1. Edit `database_file = r"C:\[YOUR_PATH]\bme280data.db"` to include your path.
-
-2. Run the host server on your PC:
+Run the host receiver on your computer:
 
 ```bash
 python LeesESP32_SQlite.py
 ```
 
-This script:
+The receiver:
 
-* Initializes an SQLite database (`bme280data.db`)
-* Listens on `0.0.0.0:5000`
-* Receives and stores data from the ESP32
+- listens on `0.0.0.0:5000`
+- creates or opens `climate_station.db`
+- creates default `Location`, `Device`, and `SensorReading` tables if needed
+- stores each ESP32/BME280 reading in SQLite
 
----
+Open `climate_station.db` in DB Browser for SQLite to inspect the readings.
 
-## 5. Learn More About Databases
+## ChartDB for Tutorial 1
 
-A detailed introduction to database concepts and SQL can be found here:
-👉 [Database Reader](https://jankd90.github.io/Databases/intro.html)
+Tutorial 1 uses ChartDB for schema design.
 
----
+Install/start ChartDB with Docker Desktop:
+
+```bash
+docker run -d -p 8080:80 ghcr.io/chartdb/chartdb:latest
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+If students export DBML from ChartDB, convert it to SQLite SQL with:
+
+```bash
+python -m pip install dbml-sqlite
+dbml_sqlite --no-print --write climate_station_generated.sql --if-table-exists tutorials/01_db_design/climate_station_starter.dbml
+```
+
+## Tutorial Starter Kit
+
+Start here:
+
+| Tutorial | Starter |
+|---|---|
+| ChartDB and Docker setup | `tutorials/00_windows_setup/getting_started.md` |
+| 1. Design the climate database | `tutorials/01_db_design/getting_started.md` |
+| 2. Capture ESP32 BME280 data | `tutorials/02_sql_real_work/getting_started.md` |
+| 3. Analyze climate data | `tutorials/03_climate_analysis/getting_started.md` |
+| 4. Build a SQLite climate app | `tutorials/04_sqlite_application/getting_started.md` |
+
+The course reader is:
+
+```text
+Course-reader-lab-manual.md
+```
 
 ## File Overview
 
-| File                  | Description                                |
-| --------------------- | ------------------------------------------ |
-| `boot.py`             | Connects ESP32 to WiFi                     |
-| `main.py`             | Reads BME280 sensor and sends data         |
-| `bme280.py`           | Sensor driver (MicroPython)                |
-| `secure.txt`          | WiFi credentials                           |
-| `LeesESP32_SQlite.py` | Host-side data receiver and SQLite handler |
-| `requirements.txt`    | Python dependencies                        |
-
----
+| Path | Description |
+|---|---|
+| `esp32-code/boot.py` | Connects ESP32 to WiFi |
+| `esp32-code/main.py` | Reads BME280 and sends data to the host |
+| `esp32-code/bme280.py` | BME280 MicroPython driver |
+| `esp32-code/secure.txt` | WiFi credentials |
+| `LeesESP32_SQlite.py` | Host-side receiver and SQLite writer |
+| `tutorials/` | Lab starter files |
+| `requirements.txt` | Optional Python dependencies |
 
 ## Notes
 
-* Ensure both devices share the same WiFi network.
-* If the ESP32 fails to connect, verify the SSID/password and network compatibility (2.4 GHz).
-* The data is transmitted as plain text and can be adapted for secure communication if required.
+- The ESP32 and host computer must be on the same WiFi network.
+- Many WiFi issues come from using a 5 GHz-only network; ESP32 boards often need 2.4 GHz.
+- The receiver stores plain sensor values for teaching purposes.
+- For production systems, add authentication, input validation, and more robust error handling.

@@ -1,0 +1,59 @@
+// Tutorial 1 starter/checklist for ChartDB.
+// Goal: complete this climate station model in ChartDB, export/convert it to SQLite,
+// and load it in DB Browser before Tutorial 2.
+//
+// Project story:
+// - An ESP32 with a BME280 sensor sends temperature, humidity, and pressure.
+// - The host computer receives readings and stores them in SQLite.
+// - Later tutorials use the same data for reports, alerts, and a small application.
+
+Table Location {
+  location_id integer [pk]
+  name text [not null]
+  location_type text [not null] // Examples: indoor_room, outdoor, lab, greenhouse
+
+  // TODO: add optional details such as floor, building, or notes.
+}
+
+Table Device {
+  device_id integer [pk]
+  device_name text [not null]
+  device_type text [not null] // Example: ESP32_BME280
+  location_id integer [not null]
+
+  // TODO: add useful device attributes such as mac_address or installed_at.
+}
+
+Table SensorReading {
+  reading_id integer [pk]
+  device_id integer [not null]
+  measured_at text [not null]
+  temperature_c real [not null]
+  humidity_percent real [not null]
+  pressure_hpa real [not null]
+
+  // TODO: add optional quality/status columns if useful.
+}
+
+Table ComfortProfile {
+  profile_id integer [pk]
+  location_id integer [not null]
+  min_temperature_c real [not null]
+  max_temperature_c real [not null]
+  min_humidity_percent real [not null]
+  max_humidity_percent real [not null]
+}
+
+Table ClimateAlert {
+  alert_id integer [pk]
+  reading_id integer [not null]
+  alert_type text [not null] // Examples: too_hot, too_cold, too_humid, too_dry
+  severity text [not null] // Examples: info, warning, critical
+  message text [not null]
+  created_at text [not null]
+}
+
+Ref: Device.location_id > Location.location_id
+Ref: SensorReading.device_id > Device.device_id
+Ref: ComfortProfile.location_id > Location.location_id
+Ref: ClimateAlert.reading_id > SensorReading.reading_id

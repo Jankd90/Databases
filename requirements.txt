@@ -1,1 +1,2 @@
-sqlite3
+# sqlite3 is included with Python's standard library.
+dbml-sqlite>=0.3.3

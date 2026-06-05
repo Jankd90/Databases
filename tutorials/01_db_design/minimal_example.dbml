@@ -1,0 +1,15 @@
+// Tiny syntax example only. This is not the full climate station solution.
+// Use this only if exporting DBML from ChartDB and converting it to SQLite SQL.
+
+Table Location {
+  location_id integer [pk]
+  name text [not null]
+}
+
+Table Device {
+  device_id integer [pk]
+  device_name text [not null]
+  location_id integer [not null]
+}
+
+Ref: Device.location_id > Location.location_id
