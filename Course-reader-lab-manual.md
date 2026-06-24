@@ -8,7 +8,7 @@
 
 ## Course Overview
 
-This course is one continuous project. Students design, build, populate, analyze, and use a SQLite database for climate measurements from an ESP32 with a BME280 sensor.
+This course is one continuous project. You (with your group) design, build, populate, analyze, and use a SQLite database for climate measurements from an ESP32 with a BME280 sensor.
 
 The project can be framed in two ways:
 
@@ -25,7 +25,7 @@ By the end of the course, students will have:
 - climate analysis queries
 - a small Python application that reads the same database
 
-## Tutorial Roadmap
+## Tutorials
 
 | Tutorial | Main Tool | Main Skill | Main Output |
 |---|---|---|---|
@@ -310,7 +310,7 @@ Students must use parameterized queries and at least one transaction.
 |---|---:|---|
 | Data Modeling | 25% | Schema separates locations, devices, readings, profiles, and alerts clearly. |
 | Sensor Data Pipeline | 25% | ESP32/BME280 data is captured or realistically simulated and stored correctly. |
-| SQL Analysis | 25% | Queries use joins, grouping, views, indexes, recursive CTEs, and trend analysis appropriately. |
+| SQL Analysis | 25% | Queries use joins, grouping, views, indexes, recursive Common Table Expressions, and trend analysis appropriately. |
 | SQLite Application | 25% | Application code uses parameterized queries, transactions, and useful climate commands. |
 
 ## Final Reflection Questions

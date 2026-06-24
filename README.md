@@ -87,16 +87,14 @@ Open:
 http://localhost:8080
 ```
 
-If students export DBML from ChartDB, convert it to SQLite SQL with:
+If you export DBML from ChartDB, convert it to SQLite SQL with:
 
 ```bash
 python -m pip install dbml-sqlite
 dbml_sqlite --no-print --write climate_station_generated.sql --if-table-exists tutorials/01_db_design/climate_station_starter.dbml
 ```
 
-## Tutorial Starter Kit
-
-Start here:
+## Tutorials
 
 | Tutorial | Starter |
 |---|---|
@@ -128,5 +126,3 @@ Course-reader-lab-manual.md
 
 - The ESP32 and host computer must be on the same WiFi network.
 - Many WiFi issues come from using a 5 GHz-only network; ESP32 boards often need 2.4 GHz.
-- The receiver stores plain sensor values for teaching purposes.
-- For production systems, add authentication, input validation, and more robust error handling.
